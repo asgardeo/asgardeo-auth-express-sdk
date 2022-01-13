@@ -8,4 +8,4 @@ export const isAuthenticated = (req: express.Request, res: express.Response, nex
     } else {
         return next();
     }
-}
+};

@@ -12,7 +12,7 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
     const clientConfig: ExpressClientConfig = formatConfig(config);
 
     //DEBUG
-    console.log("cc",clientConfig)
+    console.log("cc", clientConfig);
 
     //Get the Asgardeo Express Core
     let asgardeoExpressCore: AsgardeoExpressCore = AsgardeoExpressCore.getInstance(clientConfig, store);
@@ -77,7 +77,7 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
             if (req.query.state === "sign_out_success") {
                 return res.status(200).send({
                     message: "Successfully logged out"
-                })
+                });
             }
 
             //Check if the cookie exists
@@ -92,7 +92,6 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
                     res.cookie('ASGARDEO_SESSION_ID', null, { maxAge: 0 });
                     return res.redirect(signOutURL);
                 }
-
             }
         });
 
