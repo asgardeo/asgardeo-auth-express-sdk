@@ -1,5 +1,5 @@
 {
-  "name": "@asgardeo/auth-express-sdk",
+  "name": "asgardeo-auth-express-sdk",
   "version": "0.0.1",
   "description": "Asgardeo Auth Express JS SDK and Sample Apps",
   "main": "index.js",

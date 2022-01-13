@@ -1,4 +1,4 @@
-import { AuthClientConfig, Store } from "@asgardeo/auth-nodejs-sdk";
+import { AuthClientConfig, Store } from "@asgardeo/auth-node-sdk";
 import { AsgardeoExpressCore } from "./core";
 import express from "express";
 import { ExpressClientConfig } from "./models";

@@ -4,7 +4,7 @@ import {
     AuthURLCallback,
     NodeTokenResponse,
     Store
-} from "@asgardeo/auth-nodejs-sdk";
+} from "@asgardeo/auth-node-sdk";
 import { ExpressClientConfig } from "../models";
 
 export class AsgardeoExpressCore {

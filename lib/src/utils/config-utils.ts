@@ -1,4 +1,4 @@
-import { AuthClientConfig } from "@asgardeo/auth-nodejs-sdk";
+import { AuthClientConfig } from "@asgardeo/auth-node-sdk";
 import { DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "../constants";
 import { ExpressClientConfig } from "../models";
 

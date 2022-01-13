@@ -1,4 +1,4 @@
-import { AuthClientConfig } from "@asgardeo/auth-nodejs-sdk";
+import { AuthClientConfig } from "@asgardeo/auth-node-sdk";
 
 export interface ExpressClientConfig extends Omit<AuthClientConfig, "signInRedirectURL" | "signOutRedirectURL"> {
     baseURL: string,
