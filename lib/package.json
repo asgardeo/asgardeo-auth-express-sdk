@@ -7,7 +7,7 @@
         "lint": "eslint --ext .js,.ts .",
         "fix-lint": "eslint --ext .js,.ts . --fix",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "cross-env NODE_ENV=production rimraf dist && rimraf umd && yarn run type-check",
+        "build": "cross-env NODE_ENV=production rimraf dist && rimraf umd && yarn run type-check && cd ../samples && npm install",
         "type-check": "tsc"
     },
     "keywords": [],

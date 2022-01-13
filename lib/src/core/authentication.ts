@@ -5,14 +5,16 @@ import {
     NodeTokenResponse,
     Store
 } from "@asgardeo/auth-nodejs-sdk";
+import { ExpressClientConfig } from "../models";
+
 export class AsgardeoExpressCore {
     private _authClient: AsgardeoNodeClient<any>;
     private _store?: Store;
-    private _clientConfig: AuthClientConfig;
+    private _clientConfig: ExpressClientConfig;
 
     private static _instance: AsgardeoExpressCore;
 
-    private constructor(config: AuthClientConfig, store?: Store) {
+    private constructor(config: ExpressClientConfig, store?: Store) {
 
         //Set the client config
         this._clientConfig = config;
@@ -26,7 +28,7 @@ export class AsgardeoExpressCore {
         this._authClient = new AsgardeoNodeClient(this._clientConfig, this._store);
     }
 
-    public static getInstance(config: AuthClientConfig, store?: Store): AsgardeoExpressCore {
+    public static getInstance(config: ExpressClientConfig, store?: Store): AsgardeoExpressCore {
         console.log("authcoreconfig", config);
         //Create a new instance if its not instanciated already
         if (!AsgardeoExpressCore._instance) {
