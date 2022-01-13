@@ -72,14 +72,21 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
     router.get(
         config.logoutPath ? config.logoutPath : DEFAULT_LOGOUT_PATH,
         async (req: express.Request, res: express.Response, next: express.nextFunction) => {
-            console.log(req.cookies.ASGARDEO_SESSION_ID)
-            //http://localhost:5000/logout?state=sign_out_success&sp=SDK+Testing
+
+            //Check if it is a logout success response
+            if (req.query.state === "sign_out_success") {
+                return res.status(200).send({
+                    message: "Successfully logged out"
+                })
+            }
+
+            //Check if the cookie exists
             if (req.cookies.ASGARDEO_SESSION_ID === undefined) {
                 return res.status(401).send({
                     message: "Unauthenticated"
                 });
             } else {
-
+                //Get the signout URL
                 const signOutURL = await req.asgardeoAuth.signOut(req.cookies.ASGARDEO_SESSION_ID);
                 if (signOutURL) {
                     res.cookie('ASGARDEO_SESSION_ID', null, { maxAge: 0 });
