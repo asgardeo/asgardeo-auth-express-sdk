@@ -8,7 +8,7 @@ import {
 import { ExpressClientConfig } from "../models";
 
 export class AsgardeoExpressCore {
-    private _authClient: AsgardeoNodeClient<any>;
+    private _authClient: AsgardeoNodeClient<AuthClientConfig>;
     private _store?: Store;
     private _clientConfig: ExpressClientConfig;
 
@@ -17,7 +17,13 @@ export class AsgardeoExpressCore {
     private constructor(config: ExpressClientConfig, store?: Store) {
 
         //Set the client config
-        this._clientConfig = config;
+        this._clientConfig = { ...config, };
+
+        const nodeClientConfig: AuthClientConfig = {
+            ...config,
+            signInRedirectURL: config.baseURL + config.loginPath,
+            signOutRedirectURL: config.baseURL + config.logoutPath,
+        }
 
         //Initialize the user provided store if there is any
         if (store) {
@@ -25,7 +31,7 @@ export class AsgardeoExpressCore {
         }
 
         //Initialize the Auth Client
-        this._authClient = new AsgardeoNodeClient(this._clientConfig, this._store);
+        this._authClient = new AsgardeoNodeClient(nodeClientConfig, this._store);
     }
 
     public static getInstance(config: ExpressClientConfig, store?: Store): AsgardeoExpressCore {
