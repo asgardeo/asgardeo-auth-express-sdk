@@ -5,6 +5,7 @@ import {
     NodeTokenResponse,
     Store
 } from "@asgardeo/auth-node-sdk";
+import { DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "../constants";
 import { ExpressClientConfig } from "../models";
 
 export class AsgardeoExpressCore {
@@ -19,10 +20,12 @@ export class AsgardeoExpressCore {
         //Set the client config
         this._clientConfig = { ...config, };
 
+        //Add the signInRedirectURL and signOutRedirectURL
+        //Add custom paths if the user has already declared any or else use the defaults
         const nodeClientConfig: AuthClientConfig = {
             ...config,
-            signInRedirectURL: config.baseURL + config.loginPath,
-            signOutRedirectURL: config.baseURL + config.logoutPath,
+            signInRedirectURL: config.baseURL + (config.loginPath || DEFAULT_LOGIN_PATH),
+            signOutRedirectURL: config.baseURL + (config.logoutPath || DEFAULT_LOGOUT_PATH),
         }
 
         //Initialize the user provided store if there is any

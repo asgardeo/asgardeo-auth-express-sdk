@@ -19,7 +19,7 @@
         "typescript": "^4.5.2"
     },
     "dependencies": {
-        "@asgardeo/auth-node-sdk": "^0.0.1",
+        "@asgardeo/auth-node-sdk": "../../asgardeo-nodejs-sdk/lib",
         "express": "^4.17.2"
     }
 }

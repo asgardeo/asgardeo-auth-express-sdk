@@ -3,19 +3,11 @@ import { AsgardeoExpressCore } from "./core";
 import express from "express";
 import { ExpressClientConfig } from "./models";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
-import { formatConfig } from "./utils";
 
 export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
 
-    //Add the signInRedirectURL and signOutRedirectURL
-    //Add custom paths if the user has already declared any
-    const clientConfig: ExpressClientConfig = formatConfig(config);
-
-    //DEBUG
-    console.log("cc", clientConfig);
-
     //Get the Asgardeo Express Core
-    let asgardeoExpressCore: AsgardeoExpressCore = AsgardeoExpressCore.getInstance(clientConfig, store);
+    let asgardeoExpressCore: AsgardeoExpressCore = AsgardeoExpressCore.getInstance(config, store);
 
     //Create the router
     const router = new express.Router();
@@ -35,6 +27,8 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
             //Handle signIn() callback
             const authRedirectCallback = (url: string) => {
                 if (url) {
+                    //DEBUG
+                    console.log(url)
                     res.redirect(url);
                     next();
                 }
