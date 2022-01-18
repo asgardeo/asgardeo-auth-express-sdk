@@ -10,25 +10,32 @@
 
 ## Table of Content
 
-- [Introduction](#introduction)
-- [Install](#install)
-- [Getting Started](#getting-started)
-- [Middleware](#middleware)
-  - [constructor](#constructor)
-  - [signIn](#signIn)
-  - [signOut](#signOut)
-  - [getIDToken](#getIDToken)
-  - [isAuthenticated](#isAuthenticated)
-- [Data Storage](#data-storage)
-  - [Data Layer](#data-layer)
-    [Models](#models)
-  - [AuthClientConfig\<T>](#AuthClientConfigT)
-  - [Store](#Store)
-  - [NodeTokenResponse](#NodeTokenResponse)
-  - [URLResponse](#URLResponse)
-- [Develop](#develop)
-- [Contribute](#contribute)
-- [License](#license)
+- [Asgardeo Auth Express SDK](#asgardeo-auth-express-sdk)
+  - [Table of Content](#table-of-content)
+  - [Introduction](#introduction)
+  - [Prerequisite](#prerequisite)
+  - [Install](#install)
+  - [Getting Started](#getting-started)
+  - [Middleware](#middleware)
+    - [asgardeoAuth](#asgardeoauth)
+      - [Arguments](#arguments)
+      - [Example](#example)
+      - [Description](#description)
+      - [Example](#example-1)
+    - [isAuthenticated](#isauthenticated)
+      - [Description](#description-1)
+      - [Example](#example-2)
+  - [Data Storage](#data-storage)
+  - [Models](#models)
+    - [ExpressClientConfig](#expressclientconfig)
+    - [Store](#store)
+    - [cookieConfig](#cookieconfig)
+  - [Develop](#develop)
+    - [Prerequisites](#prerequisites)
+    - [Installing Dependencies](#installing-dependencies)
+  - [Contribute](#contribute)
+    - [Reporting issues](#reporting-issues)
+  - [License](#license)
 
 ## Introduction
 
@@ -60,16 +67,15 @@ const config = {
     signInRedirectURL: "http://localhost:3000/sign-in",
     signOutRedirectURL: "http://localhost:3000/login",
     clientID: "client ID",
-    serverOrigin: "https://api.asgardeo.io/t/<org_name>"
+    serverOrigin: "https://api.asgardeo.io/t/<org_name>",
+    loginPath : "/customLoginPath"  //An override for the default '/login' route
 };
 
 //Initialize an Express App
 const app = express();
 
-//Use the middleware and pass the config object and the options as arguments.
-app.use(asgardeoAuth(config, {
-    loginPath : "/customLoginPath"  //An override for the default /login route
-}));
+//Use the middleware and pass the config object as the argument.
+app.use(asgardeoAuth(config));
 
 //At this point the default /login and /logout routes should be available.
 //Users can use these two routes for authentication.
@@ -84,19 +90,19 @@ app.listen(5000, () => { console.log(`Server Started at PORT 5000`);});
 
 
 ```
-
+---
 ## Middleware
 
 ### asgardeoAuth
 ```TypeScript
-asgardeoAuth(config: AuthClientConfig<T>, options?: ExpressOptions, store?: Store);
+asgardeoAuth(config: ExpressClientConfig, store?: Store);
 ```
 
 #### Arguments
 
-1. config: [`AuthClientConfig<T>`](#AuthClientConfigT)
+1. config: [`ExpressClientConfig`](#ExpressClientConfig)
 
-   This contains the configuration information needed to implement authentication such as the client ID, server origin etc. Additional configuration information that is needed to be stored can be passed by extending the type of this argument using the generic type parameter. For example, if you want the config to have an attribute called `foo`, you can create an interface called `Bar` in TypeScript and then pass that interface as the generic type to `AuthClientConfig` interface. To learn more about what attributes can be passed into this object, refer to the [`AuthClientConfig<T>`](#AuthClientConfigT) section.
+   This contains the configuration information needed to implement authentication such as the client ID, server origin etc. Additional configuration information that is needed to configure the client, can be passed down from this object (Eg: A custom login path). To learn more about what attributes can be passed into this object, refer to the [`ExpressClientConfig`](#ExpressClientConfig) section.
 
    #### Example
 
@@ -105,15 +111,12 @@ asgardeoAuth(config: AuthClientConfig<T>, options?: ExpressOptions, store?: Stor
        signInRedirectURL: "http://localhost:3000/sign-in",
        signOutRedirectURL: "http://localhost:3000/login",
        clientID: "client ID",
-       serverOrigin: "https://api.asgardeo.io/t/<org_name>"
+       baseURL: "http://localhost: 3000",
+       serverOrigin: "https://api.asgardeo.io/t/<org_name>",
+       loginPath : "/customLoginPath"  //An override for the default '/login' route
    };
    ```
-
-2. options: `ExpressOptions` (optional)
-
-   These are the options that lets you customize the SDK as per your need. These options will override the default options. To learn more about what attributes can be passed into this object, refer to the [`ExpressOptions`](#ExpressOptions) section.
-
-3. store: [`Store`](#Store) (optional)
+2. store: [`Store`](#Store) (optional)
 
    This is the object of interface [`Store`](#Store) that is used by the SDK to store all the necessary data used ranging from the configuration data to the access token. By default, the SDK is packed with a built-in Memory Cache Store. If needed, you can implement the Store to create a class with your own implementation logic and pass an instance of the class as the second argument. This way, you will be able to get the data stored in your preferred place. To know more about implementing the [`Store`](#Store) interface, refer to the [Data Storage](#data-storage) section.
 
@@ -123,14 +126,32 @@ asgardeoAuth(config: AuthClientConfig<T>, options?: ExpressOptions, store?: Stor
 The SDK provides a client middleware called `asgardeoAuth` that provides you with the necessary methods to implement authentication.
 You can use this middleware to initiate the `AsgardeoAuth` for your application. By default, the SDK implements the `/login` and `/logout` routes so as soon as you use `asgardeoAuth` middleware, the `/login` and `/logout` routes will be available out of the box for the users to authenticate.
 
-_Note: The default `/login` and `/logout` route names can be customized.to the [`ExpressOptions`](#ExpressOptions) section._
+_Note: The default `/login` and `/logout` route names can be customized.To learn more, refer to the [`ExpressClientConfig`](#ExpressClientConfig) section._
 
 #### Example
 
 ```TypeScript
-app.use(asgardeoAuth(config, store, options));
+app.use(asgardeoAuth(config, store));
+```
+---
+
+### isAuthenticated
+```TypeScript
+isAuthenticated;
 ```
 
+#### Description
+
+This middleware function can be used to protect a route. When this function is passed down to a route, it will check if the session cookie exists on the request and if not it will return a    `401` error and if the cookie is there, the request will proceed as usual.
+
+#### Example
+
+```TypeScript
+app.get("/protected", isAuthenticated, (req, res) => {
+    res.status(200).send("Hello from Protected Route");
+});
+```
+---
 
 ## Data Storage
 
@@ -164,39 +185,35 @@ class NodeStore implements Store {
 
 ## Models
 
-### AuthClientConfig\<T>
+### ExpressClientConfig
 
 This model has the following attributes.
-|Attribute| Required/Optional| Type | Default Value| Description|
-|--|--|--|--|--|
-|`signInRedirectURL` |Required|`string`|""|The URL to redirect to after the user authorizes the client app. eg: `https//localhost:3000/sign-in`|
-|`signOutRedirectURL` |Optional|`string`| The `signInRedirectURL` URL will be used if this value is not provided. |The URL to redirect to after the user |signs out. eg: `http://localhost:3000/dashboard`|
-|`clientHost`|Optional| `string`|The origin of the client app obtained using `window.origin`|The hostname of the client app. eg: `https://localhost:3000`|
-|`clientID`|Required| `string`|""|The client ID of the OIDC application hosted in the Asgardeo.|
-|`clientSecret`|Optional| `string`|""|The client secret of the OIDC application|
-|`enablePKCE`|Optional| `boolean`|`true`| Specifies if a PKCE should be sent with the request for the authorization code.|
-|`prompt`|Optional| `string`|""|Specifies the prompt type of an OIDC request|
-|`responseMode`|Optional| `ResponseMode`|`"query"`|Specifies the response mode. The value can either be `query` or `form_post`|
-|`scope`|Optional| `string[]`|`["openid"]`|Specifies the requested scopes.|
-|`serverOrigin`|Required| `string`|""|The origin of the Identity Provider. eg: `https://api.asgardeo.io/t/<org_name>`|
-|`endpoints`|Optional| `OIDCEndpoints`|[OIDC Endpoints Default Values](#oidc-endpoints)|The OIDC endpoint URLs. The SDK will try to obtain the endpoint URLS |using the `.well-known` endpoint. If this fails, the SDK will use these endpoint URLs. If this attribute is not set, then the default endpoint URLs will be |used. However, if the `overrideWellEndpointConfig` is set to `true`, then this will override the endpoints obtained from the `.well-known` endpoint. |
-|`overrideWellEndpointConfig`|Optional| `boolean` | `false` | If this option is set to `true`, then the `endpoints` object will override endpoints obtained |from the `.well-known` endpoint. If this is set to `false`, then this will be used as a fallback if the request to the `.well-known` endpoint fails.|
-|`wellKnownEndpoint`|Optional| `string`|`"/oauth2/token/.well-known/openid-configuration"`| The URL of the `.well-known` endpoint.|
-|`validateIDToken`|Optional| `boolean`|`true`|Allows you to enable/disable JWT ID token validation after obtaining the ID token.|
-|`clockTolerance`|Optional| `number`|`60`|Allows you to configure the leeway when validating the id_token.|
-|`sendCookiesInRequests`|Optional| `boolean`|`true`|Specifies if cookies should be sent in the requests.|
+| Attribute                    | Required/Optional | Type            | Default Value                                               | Description                                                                                   |
+| ---------------------------- | ----------------- | --------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `baseURL`                    | Required*         | `string`        | ""                                                          | The base URL of the application. eg: `https//localhost:3000`                                  |
+| `clientID`                   | Required*         | `string`        | ""                                                          | The client ID of the OIDC application hosted in the Asgardeo.                                 |
+| `serverOrigin`               | Required*         | `string`        | ""                                                          | The origin of the Identity Provider. eg: `https://api.asgardeo.io/t/<org_name>`               |
+| `clientHost`                 | Optional          | `string`        | The origin of the client app obtained using `window.origin` | The hostname of the client app. eg: `https://localhost:3000`                                  |
+| `clientSecret`               | Optional          | `string`        | ""                                                          | The client secret of the OIDC application                                                     |
+| `enablePKCE`                 | Optional          | `boolean`       | `true`                                                      | Specifies if a PKCE should be sent with the request for the authorization code.               |
+| `prompt`                     | Optional          | `string`        | ""                                                          | Specifies the prompt type of an OIDC request                                                  |
+| `responseMode`               | Optional          | `ResponseMode`  | `"query"`                                                   | Specifies the response mode. The value can either be `query` or `form_post`                   |
+| `scope`                      | Optional          | `string[]`      | `["openid"]`                                                | Specifies the requested scopes.                                                               |
+| `endpoints`                  | Optional          | `OIDCEndpoints` | [OIDC Endpoints Default Values](#oidc-endpoints)            | The OIDC endpoint URLs. The SDK will try to obtain the endpoint URLS                          | using the `.well-known` endpoint. If this fails, the SDK will use these endpoint URLs. If this attribute is not set, then the default endpoint URLs will be | used. However, if the `overrideWellEndpointConfig` is set to `true`, then this will override the endpoints obtained from the `.well-known` endpoint. |
+| `overrideWellEndpointConfig` | Optional          | `boolean`       | `false`                                                     | If this option is set to `true`, then the `endpoints` object will override endpoints obtained | from the `.well-known` endpoint. If this is set to `false`, then this will be used as a fallback if the request to the `.well-known` endpoint fails.        |
+| `wellKnownEndpoint`          | Optional          | `string`        | `"/oauth2/token/.well-known/openid-configuration"`          | The URL of the `.well-known` endpoint.                                                        |
+| `validateIDToken`            | Optional          | `boolean`       | `true`                                                      | Allows you to enable/disable JWT ID token validation after obtaining the ID token.            |
+| `clockTolerance`             | Optional          | `number`        | `60`                                                        | Allows you to configure the leeway when validating the id_token.                              |
+| `sendCookiesInRequests`      | Optional          | `boolean`       | `true`                                                      | Specifies if cookies should be sent in the requests.                                          |
+| `cookieConfig`               | Optional          | `cookieConfig`  | [cookieConfig Default Values](cookieConfig)                 | Specifies the `maxAge`, `httpOnly` and `sameSite` values for the cookie configutation.        |
+| `loginPath`                  | Optional          | `string`        | `/login`                                                    | Specifies the default login path.                                                             |
+| `logoutPath`                 | Optional          | `string`        | `/logout`                                                   | Specifies the default logout path.                                                            |
+| `globalAuth`                 | Optional          | `boolean`       | `false`                                                     | Specifies if all the routes should be protected or not.                                       |
 
-The `AuthClientConfig<T>` can be extended by passing an interface as the generic type. For example, if you want to add an attribute called `foo` to the config object, you can create an interface called `Bar` and pass that as the generic type into the `AuthClientConfig<T>` interface.
+**Important:**
+When specifying a custom login and logout path using `loginPath` and `logoutPath` attributes, make sure you add these URLs in the `Authorized redirect URLs` section in the Asgardeo Console. Also make sure you add the `baseURL` in the `Allowed origins`section as well.
 
-```TypeScript
-interface Bar {
-    foo: string
-}
-
-const config: AuthClientConfig<Bar> ={
-    ...
-}
-```
+---
 
 ### Store
 
@@ -206,35 +223,15 @@ const config: AuthClientConfig<Bar> ={
 | `getData`    | Required          | key: `string`\|`string`        | This method retrieves the data from the store and returns a Promise that resolves with it. Since the SDK stores the data as a JSON string, the returned value will be a string. |
 | `removeData` | Required          | key: `string`                  | `Promise<void>`                                                                                                                                                                 | Removes the data with the specified key from the store.                                                                             |
 
-### NodeTokenResponse
+---
 
-| Method         | Type     | Description                 |
-| -------------- | -------- | --------------------------- |
-| `accessToken`  | `string` | The access token.           |
-| `idToken`      | `string` | The id token.               |
-| `expiresIn`    | `string` | The expiry time in seconds. |
-| `scope`        | `string` | The scope of the token.     |
-| `refreshToken` | `string` | The refresh token.          |
-| `tokenType`    | `string` | The token type.             |
-| `session`      | `string` | The session ID.             |
+### cookieConfig
 
-### AuthURLCallback
-
-```TypeScript
-(url: string): void;
-```
-
-#### Description
-
-This method is used to handle the callback from the [`signIn`](#signIn) method. You may use this function to get the authorization URL and redirect the user to authorize the application.
-
-#### Example
-```TypeScript
-//You may use this in Express JS
-const urlCallbackHandler = (url: string): void => {
-    res.redirect(url);
-}
-```
+| Method     | Required/Optional | Type      | Default Value | Description                                                                                            |
+| ---------- | ----------------- | --------- | ------------- | ------------------------------------------------------------------------------------------------------ |
+| `maxAge`   | Optional          | `number`  | 90000         | The maximum age of the cookie.                                                                         |
+| `httpOnly` | Optional          | `boolean` | `true`        | Setting this true will make sure that the cookie inaccessible to the JavaScript `Document.cooki`e API. |
+| `sameSite` | Optional          | `boolean` | `true`        | Specifies whether/when cookies are sent with cross-site requests or not.                               |
 
 ---
 
@@ -247,12 +244,12 @@ const urlCallbackHandler = (url: string): void => {
 
 ### Installing Dependencies
 
-The repository is a mono repository. The SDK repository is found in the [lib](https://github.com/asgardeo/asgardeo-auth-js-sdk/tree/master/lib) directory. You can install the dependencies by running the following command at the root.
+The repository is a mono repository. The SDK repository is found in the [lib](https://github.com/asgardeo/asgardeo-express-sdk/tree/master/lib) directory. You can install the dependencies by running the following command at the root.
 
 ```
 npm run build
 ```
-
+---
 ## Contribute
 
 Please read [Contributing to the Code Base](http://wso2.github.io/) for details on our code of conduct, and the process for submitting pull requests to us.
@@ -262,6 +259,8 @@ Please read [Contributing to the Code Base](http://wso2.github.io/) for details 
 We encourage you to report issues, improvements, and feature requests creating [Github Issues](https://github.com/asgardeo/asgardeo-auth-js-sdk/issues).
 
 Important: And please be advised that security issues must be reported to security@wso2com, not as GitHub issues, in order to reach the proper audience. We strongly advise following the WSO2 Security Vulnerability Reporting Guidelines when reporting the security issues.
+
+---
 
 ## License
 
