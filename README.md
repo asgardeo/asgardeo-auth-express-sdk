@@ -21,10 +21,10 @@
       - [Arguments](#arguments)
       - [Example](#example)
       - [Description](#description)
-      - [Example](#example-1)
+      - [Example Usage](#example-usage)
     - [isAuthenticated](#isauthenticated)
       - [Description](#description-1)
-      - [Example](#example-2)
+      - [Example Usage](#example-usage-1)
   - [Data Storage](#data-storage)
   - [Models](#models)
     - [ExpressClientConfig](#expressclientconfig)
@@ -128,7 +128,7 @@ You can use this middleware to initiate the `AsgardeoAuth` for your application.
 
 _Note: The default `/login` and `/logout` route names can be customized.To learn more, refer to the [`ExpressClientConfig`](#ExpressClientConfig) section._
 
-#### Example
+#### Example Usage
 
 ```TypeScript
 app.use(asgardeoAuth(config, store));
@@ -144,7 +144,7 @@ isAuthenticated;
 
 This middleware function can be used to protect a route. When this function is passed down to a route, it will check if the session cookie exists on the request and if not it will return a    `401` error and if the cookie is there, the request will proceed as usual.
 
-#### Example
+#### Example Usage
 
 ```TypeScript
 app.get("/protected", isAuthenticated, (req, res) => {
