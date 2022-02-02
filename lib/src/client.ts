@@ -21,14 +21,14 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
 
     //Patch in '/login' route
     router.get(
-        config.loginPath ? config.loginPath : DEFAULT_LOGIN_PATH,
+        config.loginPath || DEFAULT_LOGIN_PATH,
         async (req: express.Request, res: express.Response, next: express.nextFunction) => {
 
             //Handle signIn() callback
             const authRedirectCallback = (url: string) => {
                 if (url) {
                     //DEBUG
-                    console.log(url)
+                    console.log(url);
                     res.redirect(url);
                     next();
                 }
@@ -58,13 +58,11 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
                 return res.status(400).send("Something went wrong");
             }
 
-
-
         });
 
     //Patch in '/logout' route
     router.get(
-        config.logoutPath ? config.logoutPath : DEFAULT_LOGOUT_PATH,
+        config.logoutPath || DEFAULT_LOGOUT_PATH,
         async (req: express.Request, res: express.Response, next: express.nextFunction) => {
 
             //Check if it is a logout success response

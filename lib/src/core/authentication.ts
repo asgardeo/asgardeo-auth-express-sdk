@@ -6,6 +6,7 @@ import {
     Store
 } from "@asgardeo/auth-node-sdk";
 import { DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "../constants";
+import { AsgardeoAuthException } from "../exception";
 import { ExpressClientConfig } from "../models";
 
 export class AsgardeoExpressCore {
@@ -26,7 +27,7 @@ export class AsgardeoExpressCore {
             ...config,
             signInRedirectURL: config.baseURL + (config.loginPath || DEFAULT_LOGIN_PATH),
             signOutRedirectURL: config.baseURL + (config.logoutPath || DEFAULT_LOGOUT_PATH),
-        }
+        };
 
         //Initialize the user provided store if there is any
         if (store) {
@@ -37,12 +38,23 @@ export class AsgardeoExpressCore {
         this._authClient = new AsgardeoNodeClient(nodeClientConfig, this._store);
     }
 
-    public static getInstance(config: ExpressClientConfig, store?: Store): AsgardeoExpressCore {
-        console.log("authcoreconfig", config);
+    public static getInstance(config: ExpressClientConfig, store?: Store): AsgardeoExpressCore;
+    public static getInstance(): AsgardeoExpressCore;
+    public static getInstance(config?: ExpressClientConfig, store?: Store): AsgardeoExpressCore {
         //Create a new instance if its not instanciated already
-        if (!AsgardeoExpressCore._instance) {
+        if (!AsgardeoExpressCore._instance && config) {
             AsgardeoExpressCore._instance = new AsgardeoExpressCore(config, store);
         }
+
+        if (!AsgardeoExpressCore._instance && !config) {
+            throw Error(new AsgardeoAuthException(
+                "EXPRESS_CORE-GI1-NF01",
+                "getInstance()",
+                "User configuration  is not found",
+                "User config has not been passed to initialize AsgardeoExpressCore"
+            ).toString());
+        }
+
         return AsgardeoExpressCore._instance;
     }
 

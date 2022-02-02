@@ -24,22 +24,22 @@ app.get("/protected", isAuthenticated, (req, res) => {
 //A regular route
 app.get("/", (req, res) => {
     res.status(200).send("Hello World");
-})
+});
 
 //Get ID Token from the user
 //Need to enable authentication for this route
-app.get("/token", isAuthenticated, async(req, res) => {
+app.get("/token", isAuthenticated, async (req, res) => {
     const idToken = await req.asgardeoAuth.getIDToken(req.cookies.ASGARDEO_SESSION_ID);
     if (idToken) {
         res.status(200).send({
             token: idToken
-        })
+        });
     } else {
         res.status(500).send({
             message: "Something went wrong"
-        })
+        });
     }
-})
+});
 
 //Start the app and listen on PORT 5000
 app.listen(PORT, () => { console.log(`Server Started at PORT ${ PORT }`); });
