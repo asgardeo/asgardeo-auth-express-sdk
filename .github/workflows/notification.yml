@@ -15,7 +15,7 @@ jobs:
           WEBHOOK: ${{secrets.WEBHOOK_CHAT}}
         if: ${{github.event.issue}}
         run: |
-          IFS=':' read -r -a array <<< "$WEBHOOK"
+          IFS='&' read -r -a array <<< "$WEBHOOK"
           for element in "${array[@]}"
           do
               echo "$element"
