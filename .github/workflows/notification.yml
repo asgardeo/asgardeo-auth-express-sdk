@@ -13,7 +13,7 @@ jobs:
       - name: Send notification on issue creation
         if: ${{github.event.issue}}
         run: |
-          curl --location --request POST '${{secrets.WEBHOOK_CHAT}} | xargs' \
+          curl --location --request POST '${{secrets.WEBHOOK_CHAT}}' \
           --header 'Content-Type: application/json' \
           --data-raw '{
               "cards": [
@@ -52,7 +52,7 @@ jobs:
       - name: Send notification on pull request creation
         if: ${{github.event.pull_request}}
         run: |
-            curl --location --request POST "${{secrets.WEBHOOK_CHAT}} | xargs" \
+            curl --location --request POST '${{secrets.WEBHOOK_CHAT}}' \
             --header 'Content-Type: application/json' \
             --data-raw '{
                 "cards": [
