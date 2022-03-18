@@ -11,16 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send notification on issue creation
-        env:
-          WEBHOOK: ${{secrets.WEBHOOK_CHAT}}
         if: ${{github.event.issue}}
         run: |
-          IFS='&' read -r -a array <<< "$WEBHOOK"
-          for element in "${array[@]}"
-          do
-              echo "$element"
-          done
-          curl --location --request POST ${{secrets.WEBHOOK_CHAT}} \
+          curl --location --request POST "${{secrets.WEBHOOK_CHAT}}" \
           --header 'Content-Type: application/json' \
           --data-raw '{
               "cards": [
@@ -59,7 +52,7 @@ jobs:
       - name: Send notification on pull request creation
         if: ${{github.event.pull_request}}
         run: |
-            curl --location --request POST '${{secrets.WEBHOOK_CHAT}}' \
+            curl --location --request POST "${{secrets.WEBHOOK_CHAT}}" \
             --header 'Content-Type: application/json' \
             --data-raw '{
                 "cards": [
