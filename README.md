@@ -25,6 +25,16 @@
     - [isAuthenticated](#isauthenticated)
       - [Description](#description-1)
       - [Example Usage](#example-usage-1)
+  - [APIs](#apis)
+    - [getIDToken](#getIDToken)
+    - [getBasicUserInfo](#getBasicUserInfo)
+    - [getOIDCServiceEndpoints](#getOIDCServiceEndpoints)
+    - [getAccessToken](#getAccessToken)
+    - [revokeAccessToken](#revokeAccessToken)
+    - [requestCustomGrant](#requestCustomGrant)
+    - [updateConfig](#updateConfig)
+    - [isSignOutSuccessful](#isSignOutSuccessful)
+    - [isSignOutSuccessful](#isSignOutSuccessful) 
   - [Data Storage](#data-storage)
   - [Models](#models)
     - [ExpressClientConfig](#expressclientconfig)
@@ -151,6 +161,325 @@ app.get("/protected", isAuthenticated, (req, res) => {
     res.status(200).send("Hello from Protected Route");
 });
 ```
+---
+
+
+## APIs
+
+The SDK provides a singleton client class called `AsgardeoAuth` that provides you with the necessary methods to implement authentication.
+You can use `req.asgardeoAuth` inside a request to access this class in order to use the provided methods.
+
+#### Example
+```Typescript
+app.get("/idtoken", async(req, res) => {
+  const idToken = await req.asgardeoAuth.getIDToken(<user_id>);
+  res.send(idToken);
+});
+```
+
+---
+
+### getIDToken
+
+```TypeScript
+getIDToken(userId: string): Promise<string>
+```
+
+#### Returns
+
+idToken: `Promise<string>`
+A Promise that resolves with the ID Token.
+
+#### Description
+
+This method returns the id token.
+
+#### Example
+
+```TypeScript
+const idToken = await authClient.getIDToken("a2a2972c-51cd-5e9d-a9ae-058fae9f7927");
+```
+
+---
+
+### getBasicUserInfo
+
+```TypeScript
+getBasicUserInfo(userId: string): Promise<BasicUserInfo>
+```
+
+#### Arguments
+
+1. userId: `string` (optional)
+
+   If you want to use the SDK to manage multiple user sessions, you can pass a unique ID here to generate an authorization URL specific to that user. This can be useful when this SDK is used in backend applications.
+
+#### Returns
+
+basicUserInfo: Promise<[BasicUserInfo](#BasicUserInfo)>
+An object containing basic user information obtained from the id token.
+
+#### Description
+
+This method returns the basic user information obtained from the payload. To learn more about what information is returned, checkout the DecodedIDTokenPayload model.
+
+#### Example
+
+```TypeScript
+// This should be within an async function.
+const basicUserInfo = await authClient.getBasicUserInfo("a2a2972c-51cd-5e9d-a9ae-058fae9f7927");
+```
+
+---
+
+### getOIDCServiceEndpoints
+
+```TypeScript
+getOIDCServiceEndpoints(): Promise<OIDCEndpoints>
+```
+
+#### Returns
+
+oidcEndpoints: Promise<[OIDCEndpoints](#OIDCEndpoints)>
+An object containing the OIDC service endpoints returned by the `.well-known` endpoint.
+
+#### Description
+
+This method returns the OIDC service endpoints obtained from the `.well-known` endpoint. To learn more about what endpoints are returned, checkout the OIDCEndpoints section.
+
+#### Example
+
+```TypeScript
+// This should be within an async function.
+const oidcEndpoints = await authClient.getOIDCServiceEndpoints();
+```
+
+---
+
+### getDecodedIDToken
+
+```TypeScript
+getDecodedIDToken(userId?: string): Promise<DecodedIDTokenPayload>
+```
+
+#### Arguments
+
+1. userId: `string` (optional)
+
+   If you want to use the SDK to manage multiple user sessions, you can pass a unique ID here to generate an authorization URL specific to that user. This can be useful when this SDK is used in backend applications.
+
+#### Returns
+
+decodedIDTokenPayload: Promise<[DecodedIDTokenPayload](#DecodedIDTokenPayload)>
+The decoded ID token payload.
+
+#### Description
+
+This method decodes the payload of the id token and returns the decoded values.
+
+#### Example
+
+```TypeScript
+// This should be within an async function.
+const decodedIDTokenPayload = await authClient.getDecodedIDToken("a2a2972c-51cd-5e9d-a9ae-058fae9f7927");
+```
+
+---
+
+### getAccessToken
+
+```TypeScript
+getAccessToken(userId?: string): Promise<string>
+```
+
+#### Arguments
+
+1. userId: `string` (optional)
+
+   If you want to use the SDK to manage multiple user sessions, you can pass a unique ID here to generate an authorization URL specific to that user. This can be useful when this SDK is used in backend applications.
+
+#### Returns
+
+idToken: `Promise<string>` The id token.
+
+#### Description
+
+This method returns the id token.
+
+#### Example
+
+```TypeScript
+// This should be within an async function.
+const idToken = await authClient.getIDToken("a2a2972c-51cd-5e9d-a9ae-058fae9f7927");
+```
+
+---
+
+### revokeAccessToken
+
+```TypeScript
+revokeAccessToken(userId?: string): Promise<FetchResponse>
+```
+
+#### Arguments
+
+1. userId: `string` (optional)
+
+   If you want to use the SDK to manage multiple user sessions, you can pass a unique ID here to generate an authorization URL specific to that user. This can be useful when this SDK is used in backend applications.
+
+#### Returns
+
+A Promise that resolves with the response returned by the server.
+
+#### Description
+
+This method clears the authentication data and sends a request to revoke the access token. You can use this method if you want to sign the user out of your application but not from the server.
+
+#### Example
+
+```TypeScript
+// This should be within an async function.
+const revokeToken = await auth.revokeAccessToken("a2a2972c-51cd-5e9d-a9ae-058fae9f7927");
+```
+
+---
+
+### requestCustomGrant
+
+```TypeScript
+requestCustomGrant(config: CustomGrantConfig, userId?: string): Promise<TokenResponse | FetchResponse>
+```
+
+#### Arguments
+
+1. config: [CustomGrantConfig](#CustomGrantConfig)
+
+   The config object contains attributes that would be used to configure the custom grant request. To learn more about the different configurations available, checkout the CustomGrantConfig model.
+
+1. userId: `string` (optional)
+
+   If you want to use the SDK to manage multiple user sessions, you can pass a unique ID here to generate an authorization URL specific to that user. This can be useful when this SDK is used in backend applications.
+
+#### Returns
+
+A Promise that resolves with the token information or the response returned by the server depending on the configuration passed.
+
+#### Description
+
+This method can be used to send custom-grant requests to Asgardeo.
+
+#### Example
+
+```TypeScript
+const config = {
+    attachToken: false,
+    data: {
+        client_id: "{{clientID}}",
+        grant_type: "account_switch",
+        scope: "{{scope}}",
+        token: "{{token}}",
+    },
+    id: "account-switch",
+    returnResponse: true,
+    returnsSession: true,
+    signInRequired: true
+}
+
+auth.requestCustomGrant(config).then((response) => {
+    console.log(response);
+}).catch((error) => {
+    console.error(error);
+});
+```
+
+---
+
+### updateConfig
+
+```TypeScript
+updateConfig(config: Partial<AuthClientConfig<T>>): Promise<void>
+```
+
+#### Arguments
+
+1. config: `AuthClientConfig<T>`
+
+   The config object containing the attributes that can be used to configure the SDK. To learn more about the available attributes, refer to the[ AuthClientConfig<T>](# AuthClientConfig<T>) model.
+
+#### Description
+
+This method can be used to update the configurations passed into the constructor of the [AsgardeoAuthClient](#AsgardeoAuthClient). Please note that every attribute in the config object passed as the argument here is optional. Use this method if you want to update certain attributes after instantiating the class.
+
+#### Example
+
+```TypeScript
+const pkce = auth.updateConfig({
+    signOutRedirectURL: "http://localhost:3000/sign-out"
+});
+```
+
+---
+
+### isSignOutSuccessful
+
+```TypeScript
+static isSignOutSuccessful(signOutRedirectURL: string): boolean
+```
+**This is a static method.**
+
+#### Arguments
+
+1. signOutRedirectURL: `string`
+
+   The URL to which the user is redirected to after signing out from the server.
+
+#### Returns
+
+isSignedOut: `boolean`
+A boolean value indicating if the user has been signed out or not.
+
+#### Description
+
+This method returns if the user has been successfully signed out or not. When a user signs out from the server, the user is redirected to the URL specified by the [signOutRedirectURL](#signOutRedirectURL) in the config object passed into the constructor of the [AsgardeoAuthClient](#AsgardeoAuthClient). The server appends path parameters indicating if the sign-out is successful. This method reads the URL and returns if the sign-out is successful or not. So, make sure you pass as the argument the URL to which the user has been redirected to after signing out from the server.
+
+#### Example
+
+```TypeScript
+const isSignedOut = auth.isSignOutSuccessful(<signout_redirect_url>);
+```
+
+---
+
+### didSignOutFail
+
+```TypeScript
+static didSignOutFail(signOutRedirectURL: string): boolean
+```
+**This is a static method.**
+
+#### Arguments
+
+1. signOutRedirectURL: `string`
+
+   The URL to which the user is redirected to after signing out from the server.
+
+#### Returns
+
+didSignOutFail: `boolean`
+A boolean value indicating if sign-out failed or not.
+
+#### Description
+
+This method returns if sign-out failed or not. When a user signs out from the server, the user is redirected to the URL specified by the [signOutRedirectURL](#signOutRedirectURL) in the config object passed into the constructor of the [AsgardeoAuthClient](#AsgardeoAuthClient). The server appends path parameters indicating if the sign-out is successful. This method reads the URL and returns if the sign-out failed or not. So, make sure you pass as the argument the URL to which the user has been redirected to after signing out from the server.
+
+#### Example
+
+```TypeScript
+const isSignedOutFailed = auth.isSignOutSuccessful(<signout_redirect_url>);
+```
+
+
+
 ---
 
 ## Data Storage

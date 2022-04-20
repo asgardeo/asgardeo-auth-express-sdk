@@ -1,8 +1,27 @@
-import { AuthClientConfig, Store } from "@asgardeo/auth-node-sdk";
+/**
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import { Store } from "@asgardeo/auth-node-sdk";
 import { AsgardeoExpressCore } from "./core";
 import express from "express";
 import { ExpressClientConfig } from "./models";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
+import { v4 as uuidv4 } from "uuid";
 
 export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
 
@@ -24,6 +43,12 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
         config.loginPath || DEFAULT_LOGIN_PATH,
         async (req: express.Request, res: express.Response, next: express.nextFunction) => {
 
+            //Check if the user has a valid user ID and if not create one
+            let userID = req.cookies.ASGARDEO_SESSION_ID;
+            if (!userID) {
+                userID = uuidv4();
+            }
+
             //Handle signIn() callback
             const authRedirectCallback = (url: string) => {
                 if (url) {
@@ -36,8 +61,10 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
 
             const authResponse = await req.asgardeoAuth.signIn(
                 authRedirectCallback,
+                userID,
                 req.query.code,
-                req.query.session_state
+                req.query.session_state,
+                req.query.state
             );
 
             if (authResponse.session) {
