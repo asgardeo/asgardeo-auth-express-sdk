@@ -3,6 +3,7 @@ import { AsgardeoExpressCore } from "./core";
 import express from "express";
 import { ExpressClientConfig } from "./models";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
+import { v4 as uuidv4 } from "uuid";
 
 export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
 
@@ -24,6 +25,12 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
         config.loginPath || DEFAULT_LOGIN_PATH,
         async (req: express.Request, res: express.Response, next: express.nextFunction) => {
 
+            //Check if the user has a valid user ID and if not create one
+            let userID = req.cookies.ASGARDEO_SESSION_ID;
+            if (!userID) {
+                userID = uuidv4();
+            }
+
             //Handle signIn() callback
             const authRedirectCallback = (url: string) => {
                 if (url) {
@@ -36,8 +43,10 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
 
             const authResponse = await req.asgardeoAuth.signIn(
                 authRedirectCallback,
+                userID,
                 req.query.code,
-                req.query.session_state
+                req.query.session_state,
+                req.query.state
             );
 
             if (authResponse.session) {

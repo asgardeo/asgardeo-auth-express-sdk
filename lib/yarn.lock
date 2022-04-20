@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@asgardeo/auth-js@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@asgardeo/auth-js/-/auth-js-1.0.1.tgz#05b263c21fc805dc7e38e1aeb952cdd39967aa45"
-  integrity sha512-iu8ZnHwZodcWzvQEgTZA5BtQ6IwzH9WNldU3sdoAfkWc6Wyoh7vfM8fYTavWVM8RBkBwPJd2owONGAgQu6E/Ag==
+"@asgardeo/auth-js@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@asgardeo/auth-js/-/auth-js-2.0.6.tgz#18fa42e27cf982bcb3d3b3bce7e9476c54fdb94b"
+  integrity sha512-0DewdORR9imNTvciygi79YP7nTNIGWDzarNFryY99Um3pie2PWNbG+w52wPMYrMpsoG16sxxcbn30VmiGL/kNA==
 
-"@asgardeo/auth-node-sdk@../../asgardeo-nodejs-sdk/lib":
+"@asgardeo/auth-node-sdk@../../asgardeo-auth-node-sdk/lib":
   version "0.0.1"
   dependencies:
-    "@asgardeo/auth-js" "^1.0.1"
+    "@asgardeo/auth-js" "^2.0.6"
     base64url "^3.0.1"
     cross-fetch "^3.1.4"
     fast-sha256 "^1.3.0"
@@ -93,11 +93,11 @@ cross-env@^7.0.3:
     cross-spawn "^7.0.1"
 
 cross-fetch@^3.1.4:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
-  integrity sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
+  integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
   dependencies:
-    node-fetch "2.6.1"
+    node-fetch "2.6.7"
 
 cross-spawn@^7.0.1:
   version "7.0.3"
@@ -263,9 +263,9 @@ isexe@^2.0.0:
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
 jose@^4.3.7:
-  version "4.3.8"
-  resolved "https://registry.yarnpkg.com/jose/-/jose-4.3.8.tgz#149cb6a318689d5dbf469b40ac48c3f82276f4e6"
-  integrity sha512-dFiqN5FPLNWa/v+J3ShFjV/9sRGickxMbGUbqBrYr+BkrqLOieACaavSi9XmLJXe0Uzd7Cgs1oYtDvDrOyWLgw==
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-4.6.2.tgz#45724b4ec9b1e543240dba3da087f80eb979c1e1"
+  integrity sha512-7Jd3kGkgDfhpj+SFqfam70HyVC0gtdfbGc/tHb5dqsWYlQqodgkotqWYEXn1PhQXgdJqsyOAIKT0N4O2riUFiA==
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -326,10 +326,12 @@ negotiator@0.6.2:
   resolved "https://registry.npmjs.org/negotiator/-/negotiator-0.6.2.tgz"
   integrity sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
 
-node-fetch@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
-  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
+node-fetch@2.6.7:
+  version "2.6.7"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
+  integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
+  dependencies:
+    whatwg-url "^5.0.0"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -466,6 +468,11 @@ toidentifier@1.0.1:
   resolved "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
+tr46@~0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
+  integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
+
 type-is@~1.6.18:
   version "1.6.18"
   resolved "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz"
@@ -498,6 +505,19 @@ vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
+
+webidl-conversions@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
+  integrity sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=
+
+whatwg-url@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-5.0.0.tgz#966454e8765462e37644d3626f6742ce8b70965d"
+  integrity sha1-lmRU6HZUYuN2RNNib2dCzotwll0=
+  dependencies:
+    tr46 "~0.0.3"
+    webidl-conversions "^3.0.0"
 
 which@^2.0.1:
   version "2.0.2"

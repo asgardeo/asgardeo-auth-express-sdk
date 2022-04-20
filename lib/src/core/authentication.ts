@@ -2,7 +2,7 @@ import {
     AsgardeoNodeClient,
     AuthClientConfig,
     AuthURLCallback,
-    NodeTokenResponse,
+    TokenResponse,
     Store
 } from "@asgardeo/auth-node-sdk";
 import { DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "../constants";
@@ -58,21 +58,26 @@ export class AsgardeoExpressCore {
         return AsgardeoExpressCore._instance;
     }
 
-    public async signIn(authURLCallback: AuthURLCallback, authorizationCode?: string, sessionState?: string)
-        : Promise<NodeTokenResponse> {
-        return this._authClient.signIn(authURLCallback, authorizationCode, sessionState);
+    public async signIn(authURLCallback: AuthURLCallback,
+        userId: string,
+        authorizationCode?: string,
+        sessionState?: string,
+        state?: string,
+        signInConfig?: Record<string, string | boolean>)
+        : Promise<TokenResponse> {
+        return this._authClient.signIn(authURLCallback, userId, authorizationCode, sessionState, state, signInConfig);
     }
 
-    public async signOut(uuid: string): Promise<string> {
-        return this._authClient.signOut(uuid);
+    public async signOut(userId: string): Promise<string> {
+        return this._authClient.signOut(userId);
     }
 
-    public async isAuthenticated(uuid: string): Promise<boolean> {
-        return this._authClient.isAuthenticated(uuid);
+    public async isAuthenticated(userId: string): Promise<boolean> {
+        return this._authClient.isAuthenticated(userId);
     }
 
-    public async getIDToken(uuid: string): Promise<string> {
-        return this._authClient.getIDToken(uuid);
+    public async getIDToken(userId: string): Promise<string> {
+        return this._authClient.getIDToken(userId);
     }
 
 }
