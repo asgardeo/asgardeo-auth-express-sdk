@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import { AuthClientConfig, Store } from "@asgardeo/auth-node-sdk";
+import { Store } from "@asgardeo/auth-node-sdk";
 import { AsgardeoExpressCore } from "./core";
 import express from "express";
 import { ExpressClientConfig } from "./models";
