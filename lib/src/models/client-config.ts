@@ -1,6 +1,6 @@
 import { AuthClientConfig } from '@asgardeo/auth-node-sdk';
 
-export interface ExpressClientConfig extends Omit<AuthClientConfig, "signInRedirectURL" | "signOutRedirectURL"> {
+export interface StrictExpressClientConfig {
     baseURL: string,
     cookieConfig?: {
         maxAge?: number,
@@ -11,3 +11,6 @@ export interface ExpressClientConfig extends Omit<AuthClientConfig, "signInRedir
     loginPath?: string,
     logoutPath?: string;
 }
+
+export type ExpressClientConfig = Exclude<AuthClientConfig, "signInRedirectURL" | "signOutRedirectURL"> &
+    StrictExpressClientConfig;
