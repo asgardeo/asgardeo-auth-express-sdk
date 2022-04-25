@@ -16,15 +16,14 @@
  * under the License.
  */
 
-import { Store } from "@asgardeo/auth-node-sdk";
+import { Store } from "@asgardeo/auth-node";
 import { AsgardeoExpressCore } from "./core";
 import express from "express";
 import { ExpressClientConfig } from "./models";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
 import { v4 as uuidv4 } from "uuid";
 
-export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
-
+export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store): void => {
     //Get the Asgardeo Express Core
     let asgardeoExpressCore: AsgardeoExpressCore = AsgardeoExpressCore.getInstance(config, store);
 
@@ -54,35 +53,30 @@ export const asgardeoAuth = (config: ExpressClientConfig, store?: Store) => {
                 if (url) {
                     //DEBUG
                     console.log(url);
+                    res.cookie("ASGARDEO_SESSION_ID", userID, {
+                        maxAge: config.cookieConfig?.maxAge ? config.cookieConfig.maxAge : CookieConfig.defaultMaxAge,
+                        httpOnly: config.cookieConfig?.httpOnly ?? CookieConfig.defaultHttpOnly,
+                        sameSite: config.cookieConfig?.sameSite ?? CookieConfig.defaultSameSite
+                    });
                     res.redirect(url);
                     next();
                 }
             };
 
-            const authResponse = await req.asgardeoAuth.signIn(
-                authRedirectCallback,
-                userID,
-                req.query.code,
-                req.query.session_state,
-                req.query.state
-            );
+            try {
+                const authResponse = await asgardeoExpressCore.signIn(
+                    authRedirectCallback,
+                    userID,
+                    req.query.code,
+                    req.query.session_state,
+                    req.query.state
+                );
 
-            if (authResponse.session) {
-                //Set the session cookie
-                res.cookie('ASGARDEO_SESSION_ID', authResponse.session, {
-                    maxAge: config.cookieConfig?.maxAge
-                        ? config.cookieConfig.maxAge
-                        : CookieConfig.defaultMaxAge,
-                    httpOnly: config.cookieConfig?.httpOnly
-                        ? config.cookieConfig.httpOnly
-                        : Boolean(CookieConfig.defaultHttpOnly),
-                    sameSite: config.cookieConfig?.sameSite
-                        ? config.cookieConfig.sameSite
-                        : Boolean(CookieConfig.defaultSameSite)
-                });
-                return res.status(200).send(authResponse);
-            } else if (req.query.code) {
-                return res.status(400).send("Something went wrong");
+                if (authResponse.accessToken || authResponse.idToken) {
+                    return res.status(200).send(authResponse);
+                }
+            } catch (error) {
+                return res.status(500).send(error);
             }
 
         });
