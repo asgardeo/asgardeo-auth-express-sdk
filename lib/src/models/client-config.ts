@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { AuthClientConfig } from '@asgardeo/auth-node-sdk';
+import { AuthClientConfig } from '@asgardeo/auth-node';
 
 export interface StrictExpressClientConfig {
     baseURL: string,
