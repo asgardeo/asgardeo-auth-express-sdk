@@ -26,7 +26,7 @@ import {
     DecodedIDTokenPayload,
     CustomGrantConfig,
     FetchResponse
-} from "@asgardeo/auth-node-sdk";
+} from "@asgardeo/auth-node";
 import { DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "../constants";
 import { AsgardeoAuthException } from "../exception";
 import { ExpressClientConfig } from "../models";
@@ -63,7 +63,7 @@ export class AsgardeoExpressCore {
     public static getInstance(config: ExpressClientConfig, store?: Store): AsgardeoExpressCore;
     public static getInstance(): AsgardeoExpressCore;
     public static getInstance(config?: ExpressClientConfig, store?: Store): AsgardeoExpressCore {
-        //Create a new instance if its not instanciated already
+        //Create a new instance if its not instantiated already
         if (!AsgardeoExpressCore._instance && config) {
             AsgardeoExpressCore._instance = new AsgardeoExpressCore(config, store);
         }
@@ -131,11 +131,11 @@ export class AsgardeoExpressCore {
     }
 
     public static didSignOutFail(signOutRedirectURL: string): boolean {
-        return AsgardeoExpressCore.didSignOutFail(signOutRedirectURL);
+        return AsgardeoNodeClient.didSignOutFail(signOutRedirectURL);
     }
 
     public static isSignOutSuccessful(signOutRedirectURL: string): boolean {
-        return AsgardeoExpressCore.isSignOutSuccessful(signOutRedirectURL);
+        return AsgardeoNodeClient.isSignOutSuccessful(signOutRedirectURL);
     }
 
 }
