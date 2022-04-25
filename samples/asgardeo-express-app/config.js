@@ -17,11 +17,11 @@
  */
 
 const config = {
-    "clientID": "Mm2adXV2jnL9pfo2kCHIEi_ej3Aa",
-    "serverOrigin": "https://api.asgardeo.io/t/iconicto",
-    "baseURL": "http://localhost:5000",
+    "clientID": "9CzjLJRJX3MJ4LwSM07q9c_b7UEa",
+    "clientSecret": "YPPUfAPeue_bbbjNoLJQ4ytIWnAa",
+    "baseUrl": "https://dev.api.asgardeo.io/t/thivi",
+    "baseURL": "http://localhost:3000",
     "enableOIDCSessionManagement": true,
-    "scope": [ "openid", "profile" ],
-    "validateIDToken": true,
+    "scope": [ "openid", "profile" ]
 };
 module.exports = config;

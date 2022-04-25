@@ -19,17 +19,17 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const config = require('./config');
-const { asgardeoAuth, isAuthenticated } = require('@asgardeo/auth-express-sdk');
+const { AsgardeoExpressAuth, isAuthenticated } = require('@asgardeo/auth-express');
 
 //Define the port to run the server
-const PORT = 5000;
+const PORT = 3000;
 
 //Initialize Express App
 const app = express();
 app.use(cookieParser());
 
-//Use the Asgaedeo Auth Middleware
-app.use(asgardeoAuth(config));
+//Use the Asgardeo Auth Middleware
+app.use(AsgardeoExpressAuth(config));
 
 //At this point the default /login and /logout routes should be available.
 //Users can use these two routes for authentication

@@ -1,5 +1,5 @@
 {
-  "name": "asgardeo-auth-express-sample",
+  "name": "asgardeo-express-sample",
   "description": "A sample app to demonstrate the usage of @asgardeo/auth-express-sdk",
   "version": "0.0.1",
   "main": "index.js",
@@ -17,6 +17,6 @@
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "express": "^4.17.1",
-    "@asgardeo/auth-express-sdk": "^0.0.1"
+    "@asgardeo/auth-express": "../../lib"
   }
 }
