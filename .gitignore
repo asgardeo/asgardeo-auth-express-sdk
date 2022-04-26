@@ -1,7 +1,7 @@
 # Dependency directories
 node_modules/
 lib/node_modules/
-sample/node_modules/
+samples/asgardeo-express-app/node_modules/
 jspm_packages/
 
 # Distribution directories

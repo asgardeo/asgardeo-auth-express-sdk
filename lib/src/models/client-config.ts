@@ -18,7 +18,7 @@
 import { AuthClientConfig } from '@asgardeo/auth-node';
 
 export interface StrictExpressClientConfig {
-    baseURL: string,
+    appURL: string,
     cookieConfig?: {
         maxAge?: number,
         httpOnly?: boolean,
