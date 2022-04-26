@@ -47,8 +47,8 @@ export class AsgardeoExpressCore {
         //Add custom paths if the user has already declared any or else use the defaults
         const nodeClientConfig: AuthClientConfig = {
             ...config,
-            signInRedirectURL: config.baseURL + (config.loginPath || DEFAULT_LOGIN_PATH),
-            signOutRedirectURL: config.baseURL + (config.logoutPath || DEFAULT_LOGOUT_PATH),
+            signInRedirectURL: config.appURL + (config.loginPath || DEFAULT_LOGIN_PATH),
+            signOutRedirectURL: config.appURL + (config.logoutPath || DEFAULT_LOGOUT_PATH),
         };
 
         //Initialize the user provided store if there is any
@@ -84,10 +84,15 @@ export class AsgardeoExpressCore {
         userId: string,
         authorizationCode?: string,
         sessionState?: string,
-        state?: string,
-        signInConfig?: Record<string, string | boolean>)
+        state?: string)
         : Promise<TokenResponse> {
-        return this._authClient.signIn(authURLCallback, userId, authorizationCode, sessionState, state, signInConfig);
+        return this._authClient.signIn(
+            authURLCallback,
+            userId,
+            authorizationCode,
+            sessionState,
+            state
+        );
     }
 
     public async signOut(userId: string): Promise<string> {

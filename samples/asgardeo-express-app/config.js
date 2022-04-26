@@ -17,11 +17,12 @@
  */
 
 const config = {
-    "clientID": "9CzjLJRJX3MJ4LwSM07q9c_b7UEa",
-    "clientSecret": "YPPUfAPeue_bbbjNoLJQ4ytIWnAa",
-    "baseUrl": "https://dev.api.asgardeo.io/t/thivi",
-    "baseURL": "http://localhost:3000",
-    "enableOIDCSessionManagement": true,
-    "scope": [ "openid", "profile" ]
+  clientID: "_1d5iHE2DzskjgZWHOsjCazhB_ga",
+  clientSecret: "5XinOZ5syWId34TxJ0Rt9_f9Hpsa",
+  baseUrl: "https://dev.api.asgardeo.io/t/sdktests",
+  appURL: "http://localhost:3000",
+  scope: ["openid", "profile"],
+  enableOIDCSessionManagement: true,
 };
+
 module.exports = config;

@@ -22,6 +22,7 @@ import express from "express";
 import { ExpressClientConfig } from "./models";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
 import { v4 as uuidv4 } from "uuid";
+import { AsgardeoAuthException } from "./exception";
 
 export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store): void => {
     //Get the Asgardeo Express Core
