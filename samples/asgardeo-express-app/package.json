@@ -6,16 +6,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "nodemon index.js",
-    "build": "yarn install"
+    "debug": "DEBUG=true nodemon index.js",
+    "build": "yarn install",
+    "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Asgardeo",
+  "license": "Apache-2.0",
   "devDependencies": {
     "nodemon": "^2.0.15"
   },
   "dependencies": {
-    "@asgardeo/auth-express": "../../lib/",
+    "@asgardeo/auth-express": "0.0.1",
     "cookie-parser": "^1.4.6",
     "express": "^4.17.1"
   }

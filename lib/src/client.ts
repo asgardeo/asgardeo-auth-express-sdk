@@ -23,6 +23,7 @@ import { ExpressClientConfig } from "./models";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
 import { v4 as uuidv4 } from "uuid";
 import { AsgardeoAuthException } from "./exception";
+import { Logger } from "./utils/logger-util";
 
 export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store): void => {
     //Get the Asgardeo Express Core
@@ -53,7 +54,7 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
             const authRedirectCallback = (url: string) => {
                 if (url) {
                     //DEBUG
-                    console.log(url);
+                    Logger.debug("Redirecting to: " + url);
                     res.cookie("ASGARDEO_SESSION_ID", userID, {
                         maxAge: config.cookieConfig?.maxAge ? config.cookieConfig.maxAge : CookieConfig.defaultMaxAge,
                         httpOnly: config.cookieConfig?.httpOnly ?? CookieConfig.defaultHttpOnly,

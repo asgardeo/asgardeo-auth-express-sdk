@@ -49,18 +49,19 @@
 
 ## Introduction
 
-Asgardeo Auth Express SDK provides the core methods that are needed to implement OIDC authentication in JavaScript/TypeScript based server side apps written with Express Framework. This SDK wraps around the `@asgardeo/auth-nodejs-sdk` to provide framework specific functionalities for Express enabling the developers to use OIDC authentication in the applications with a minimum effort.
+Asgardeo Auth Express SDK provides the core methods that are needed to implement OIDC authentication in JavaScript/TypeScript based server side apps written with Express Framework. This SDK wraps around the `@asgardeo/auth-node` to provide framework specific functionalities for Express enabling the developers to use OIDC authentication in the applications with a minimum effort.
 
 ## Prerequisite
 
 Create an organization in Asgardeo if you don't already have one. The organization name you choose will be referred to as `<org_name>` throughout this documentation.
+If you are using [Asgardeo Cloud](https://wso2.com/asgardeo/) as the identity server, create a **Standard-Based Application** in the console.
 
 ## Install
 
 Install the library from the npm registry.
 
 ```
-npm install @asgardeo/auth-express-sdk
+npm install @asgardeo/auth-express
 ```
 
 ## Getting Started
@@ -70,22 +71,23 @@ npm install @asgardeo/auth-express-sdk
 const express = require('express');
 
 // The SDK provides a client middleware that can be used to carry out the authentication.
-const { asgardeoAuth } = require('@asgardeo/auth-express-sdk');
+const { AsgardeoExpressAuth, isAuthenticated } = require('@asgardeo/auth-express');
 
 // Create a config object containing the necessary configurations.
 const config = {
-    signInRedirectURL: "http://localhost:3000/sign-in",
-    signOutRedirectURL: "http://localhost:3000/login",
-    clientID: "client ID",
-    serverOrigin: "https://api.asgardeo.io/t/<org_name>",
-    loginPath : "/customLoginPath"  //An override for the default '/login' route
+  clientID: "<YOUR_CLIENT_ID>",
+  clientSecret: "<YOUR_CLIENT_SECRET>",
+  baseUrl: "<YOUR_BASE_URL>",
+  appURL: "http://localhost:3000",
+  scope: ["openid", "profile"],
+  enableOIDCSessionManagement: true,
 };
 
 //Initialize an Express App
 const app = express();
 
 //Use the middleware and pass the config object as the argument.
-app.use(asgardeoAuth(config));
+app.use(AsgardeoExpressAuth(config));
 
 //At this point the default /login and /logout routes should be available.
 //Users can use these two routes for authentication.
@@ -95,8 +97,13 @@ app.get("/", (req, res) => {
     res.status(200).send("Hello World");
 });
 
+//A Protected Route
+app.get("/protected", isAuthenticated, (req, res) => {
+    res.status(200).send("Hello from Protected Route");
+});
+
 //Start the express app on PORT 5000
-app.listen(5000, () => { console.log(`Server Started at PORT 5000`);});
+app.listen(3000, () => { console.log(`Server Started at PORT 3000`);});
 
 
 ```
@@ -118,12 +125,14 @@ asgardeoAuth(config: ExpressClientConfig, store?: Store);
 
    ```TypeScript
    const config = {
-       signInRedirectURL: "http://localhost:3000/sign-in",
-       signOutRedirectURL: "http://localhost:3000/login",
-       clientID: "client ID",
-       baseURL: "http://localhost: 3000",
-       serverOrigin: "https://api.asgardeo.io/t/<org_name>",
+       clientID: "<YOUR_CLIENT_ID>",
+       clientSecret: "<YOUR_CLIENT_SECRET>",
+       baseUrl: "<YOUR_BASE_URL>",
+       appURL: "http://localhost:3000",
+       scope: ["openid", "profile"],
+       enableOIDCSessionManagement: true,
        loginPath : "/customLoginPath"  //An override for the default '/login' route
+       logoutPath : "/customLogoutPath"  //An override for the default '/logout' route
    };
    ```
 2. store: [`Store`](#Store) (optional)
@@ -519,9 +528,9 @@ class NodeStore implements Store {
 This model has the following attributes.
 | Attribute                    | Required/Optional | Type            | Default Value                                               | Description                                                                                   |
 | ---------------------------- | ----------------- | --------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `baseURL`                    | Required*         | `string`        | ""                                                          | The base URL of the application. eg: `https//localhost:3000`                                  |
+| `appURL`                    | Required*         | `string`        | ""                                                          | The base URL of the application. eg: `https//localhost:3000`                                  |
 | `clientID`                   | Required*         | `string`        | ""                                                          | The client ID of the OIDC application hosted in the Asgardeo.                                 |
-| `serverOrigin`               | Required*         | `string`        | ""                                                          | The origin of the Identity Provider. eg: `https://api.asgardeo.io/t/<org_name>`               |
+| `baseUrl`               | Required*         | `string`        | ""                                                          | The origin of the Identity Provider. eg: `https://api.asgardeo.io/t/<org_name>`               |
 | `clientHost`                 | Optional          | `string`        | The origin of the client app obtained using `window.origin` | The hostname of the client app. eg: `https://localhost:3000`                                  |
 | `clientSecret`               | Optional          | `string`        | ""                                                          | The client secret of the OIDC application                                                     |
 | `enablePKCE`                 | Optional          | `boolean`       | `true`                                                      | Specifies if a PKCE should be sent with the request for the authorization code.               |
