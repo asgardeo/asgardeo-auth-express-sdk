@@ -17,9 +17,9 @@
  */
 
 const config = {
-  clientID: "_1d5iHE2DzskjgZWHOsjCazhB_ga",
-  clientSecret: "5XinOZ5syWId34TxJ0Rt9_f9Hpsa",
-  baseUrl: "https://dev.api.asgardeo.io/t/sdktests",
+  clientID: "",
+  clientSecret: "",
+  baseUrl: "",
   appURL: "http://localhost:3000",
   scope: ["openid", "profile"],
   enableOIDCSessionManagement: true,
