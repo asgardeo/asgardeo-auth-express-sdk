@@ -21,14 +21,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Suvink/asgardeo-auth-express-sdk.git"
+    "url": "git+https://github.com/asgardeo/asgardeo-auth-express-sdk"
   },
   "author": "Asgardeo",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Suvink/asgardeo-auth-express-sdk/issues"
+    "url": "https://github.com/asgardeo/asgardeo-auth-express-sdk/issues"
   },
-  "homepage": "https://github.com/Suvink/asgardeo-auth-express-sdk#readme",
+  "homepage": "https://github.com/asgardeo/asgardeo-auth-express-sdk#readme",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
