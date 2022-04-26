@@ -22,6 +22,7 @@ const config = {
   baseUrl: "https://dev.api.asgardeo.io/t/sdktests",
   appURL: "http://localhost:3000",
   scope: ["openid", "profile"],
+  enableOIDCSessionManagement: true,
 };
 
 module.exports = config;

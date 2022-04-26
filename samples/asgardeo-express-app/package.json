@@ -15,8 +15,8 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "@asgardeo/auth-express": "../../lib/",
     "cookie-parser": "^1.4.6",
-    "express": "^4.17.1",
-    "@asgardeo/auth-express": "../../lib"
+    "express": "^4.17.1"
   }
 }
