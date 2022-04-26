@@ -15,5 +15,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export * from "./default-options";
-export * from "./logger-config";
+
+export const LOGGER_CONFIG = {
+    bgGreen: "\x1b[42m",
+    bgRed: "\x1b[41m",
+    bgYellow: "\x1b[43m",
+    fgBlack: "\x1b[30m",
+    fgGreen: "\x1b[32m",
+    fgRed: "\x1b[31m",
+    fgYellow: "\x1b[33m",
+    reset: "\x1b[0m"
+}

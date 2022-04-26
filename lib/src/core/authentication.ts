@@ -30,6 +30,7 @@ import {
 import { DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "../constants";
 import { AsgardeoAuthException } from "../exception";
 import { ExpressClientConfig } from "../models";
+import { Logger } from "../utils/logger-util";
 
 export class AsgardeoExpressCore {
     private _authClient: AsgardeoNodeClient<AuthClientConfig>;
@@ -53,6 +54,7 @@ export class AsgardeoExpressCore {
 
         //Initialize the user provided store if there is any
         if (store) {
+            Logger.debug("Initializing user provided store")
             this._store = store;
         }
 
@@ -66,6 +68,7 @@ export class AsgardeoExpressCore {
         //Create a new instance if its not instantiated already
         if (!AsgardeoExpressCore._instance && config) {
             AsgardeoExpressCore._instance = new AsgardeoExpressCore(config, store);
+            Logger.debug("Initialized AsgardeoExpressCore successfully");
         }
 
         if (!AsgardeoExpressCore._instance && !config) {
