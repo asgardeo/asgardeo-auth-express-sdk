@@ -17,9 +17,9 @@
  */
 
 const config = {
-  clientID: "mInPdNsGPh0JmvpljN31wgsX7tYa",
-  clientSecret: "ppSvpogFXEBkZpSkj85RRFsisN0a",
-  baseUrl: "https://api.asgardeo.io/t/iconicto",
+  clientID: "",
+  clientSecret: "",
+  baseUrl: "",
   appURL: "http://localhost:3000",
   scope: ["openid", "profile"],
   defaultAuthenticatedURL: "/",
