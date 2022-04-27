@@ -98,7 +98,7 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
         async (req: express.Request, res: express.Response, next: express.nextFunction) => {
             try {
                 const response: TokenResponse = await signIn(req, res, next, config.signInConfig);
-                if (response) {
+                if (response.accessToken || response.idToken) {
                     console.log("resp",response)
                     res.redirect(config.defaultAuthenticatedURL);
                 }
