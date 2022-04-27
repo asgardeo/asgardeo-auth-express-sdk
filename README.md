@@ -6,7 +6,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/wso2/product-is/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/twitter/follow/wso2.svg?style=social&label=Follow)](https://twitter.com/intent/follow?screen_name=wso2)
 
-🚧 &ensp;&ensp;This project is a work in progress. Please do not use this yet!
 
 ## Table of Content
 
@@ -49,7 +48,7 @@
 
 ## Introduction
 
-Asgardeo Auth Express SDK provides the core methods that are needed to implement OIDC authentication in JavaScript/TypeScript based server side apps written with Express Framework. This SDK wraps around the `@asgardeo/auth-node` to provide framework specific functionalities for Express enabling the developers to use OIDC authentication in the applications with a minimum effort.
+Asgardeo Auth Express SDK implements OIDC authentication in JavaScript/TypeScript-based server-side apps written with Express Framework. This SDK wraps around the `@asgardeo/auth-node` to provide framework-specific functionalities for Express enabling the developers to use OIDC authentication in the applications with minimum effort.
 
 ## Prerequisite
 
@@ -77,10 +76,9 @@ const { AsgardeoExpressAuth, isAuthenticated } = require('@asgardeo/auth-express
 const config = {
   clientID: "<YOUR_CLIENT_ID>",
   clientSecret: "<YOUR_CLIENT_SECRET>",
-  baseUrl: "<YOUR_BASE_URL>",
+  baseUrl: "https://api.asgardeo.io/t/<org_name>",
   appURL: "http://localhost:3000",
-  scope: ["openid", "profile"],
-  enableOIDCSessionManagement: true,
+  scope: ["openid", "profile"]
 };
 
 //Initialize an Express App
@@ -104,7 +102,6 @@ app.get("/protected", isAuthenticated, (req, res) => {
 
 //Start the express app on PORT 5000
 app.listen(3000, () => { console.log(`Server Started at PORT 3000`);});
-
 
 ```
 ---
@@ -171,7 +168,6 @@ app.get("/protected", isAuthenticated, (req, res) => {
 });
 ```
 ---
-
 
 ## APIs
 

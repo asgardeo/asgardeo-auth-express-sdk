@@ -21,8 +21,7 @@ const config = {
   clientSecret: "",
   baseUrl: "",
   appURL: "http://localhost:3000",
-  scope: ["openid", "profile"],
-  enableOIDCSessionManagement: true,
+  scope: ["openid", "profile"]
 };
 
 module.exports = config;

@@ -2,7 +2,6 @@
   "name": "asgardeo-auth-express-sdk",
   "version": "0.0.1",
   "description": "Asgardeo Auth Express JS SDK and Sample Apps",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "lerna run build --stream",

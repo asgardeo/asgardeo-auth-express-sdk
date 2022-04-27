@@ -19,5 +19,5 @@
 export * from './data';
 export * from "./client-config";
 
-//Export models from Auth JS SDK
+//Export models from Auth Node SDK
 export * from "@asgardeo/auth-node";

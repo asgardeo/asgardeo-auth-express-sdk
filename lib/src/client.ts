@@ -66,7 +66,7 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
             };
 
             try {
-                const authResponse = await asgardeoExpressCore.signIn(
+                const authResponse = await req.asgardeoAuth.signIn(
                     authRedirectCallback,
                     userID,
                     req.query.code,

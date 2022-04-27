@@ -62,4 +62,5 @@ export class Logger {
                 LOGGER_CONFIG.reset
             );
     }
+    
 }

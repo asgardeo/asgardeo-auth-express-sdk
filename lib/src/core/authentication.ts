@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import {
     AsgardeoNodeClient,
     AuthClientConfig,
@@ -83,7 +84,8 @@ export class AsgardeoExpressCore {
         return AsgardeoExpressCore._instance;
     }
 
-    public async signIn(authURLCallback: AuthURLCallback,
+    public async signIn(
+        authURLCallback: AuthURLCallback,
         userId: string,
         authorizationCode?: string,
         sessionState?: string,
