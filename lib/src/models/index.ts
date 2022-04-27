@@ -18,6 +18,7 @@
 
 export * from './data';
 export * from "./client-config";
+export * from "./protect-route";
 
 //Export models from Auth Node SDK
 export * from "@asgardeo/auth-node";
