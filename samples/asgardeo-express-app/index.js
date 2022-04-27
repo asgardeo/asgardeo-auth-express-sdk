@@ -21,7 +21,7 @@ const cookieParser = require("cookie-parser");
 const config = require("./config");
 const {
   AsgardeoExpressAuth,
-  isAuthenticated,
+  protectRoute,
 } = require("@asgardeo/auth-express");
 
 //Define the port to run the server
@@ -33,6 +33,16 @@ app.use(cookieParser());
 
 //Use the Asgardeo Auth Middleware
 app.use(AsgardeoExpressAuth(config));
+
+//Define the callback function to handle invalidated requests
+const authCallback = (res, error) => {
+  res.redirect(`/?message=${ error }`);
+
+  // Return true to end the flow at the middleware.
+  return true;
+};
+
+const isAuthenticated = protectRoute(authCallback);
 
 //At this point the default /login and /logout routes should be available.
 //Users can use these two routes for authentication
@@ -49,18 +59,10 @@ app.get("/", (req, res) => {
 
 // A protected Route
 
-//Define the callback function to handle invalidated requests
-//If the callback's req object has an asgardeoError, redirect the user to the login page.
-const authCallback = (req, res, next) => {
-  if (req.asgardeoError) {
-    res.redirect("/login");
-  } else {
-    next();
-  }
-};
 
-//Pass the middleware and the callback function to the route
-app.get("/token", isAuthenticated, authCallback, async (req, res) => {
+
+//Use the middleware
+app.get("/token", isAuthenticated, async (req, res) => {
   const idToken = await req.asgardeoAuth.getIDToken(
     req.cookies.ASGARDEO_SESSION_ID
   );
