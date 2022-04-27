@@ -16,10 +16,13 @@
  * under the License.
  */
 
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const config = require('./config');
-const { AsgardeoExpressAuth, isAuthenticated } = require('@asgardeo/auth-express');
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const config = require("./config");
+const {
+  AsgardeoExpressAuth,
+  isAuthenticated,
+} = require("@asgardeo/auth-express");
 
 //Define the port to run the server
 const PORT = 3000;
@@ -36,28 +39,46 @@ app.use(AsgardeoExpressAuth(config));
 
 //Protected Routes
 app.get("/protected", isAuthenticated, (req, res) => {
-    res.status(200).send("Hello from Protected Route");
+  res.status(200).send("Hello from Protected Route");
 });
 
 //A regular route
 app.get("/", (req, res) => {
-    res.status(200).send("Hello World");
+  res.status(200).send("Hello World");
 });
 
-//Get ID Token from the user
-//Need to enable authentication for this route
-app.get("/token", isAuthenticated, async (req, res) => {
-    const idToken = await req.asgardeoAuth.getIDToken(req.cookies.ASGARDEO_SESSION_ID);
-    if (idToken) {
-        res.status(200).send({
-            token: idToken
-        });
-    } else {
-        res.status(500).send({
-            message: "Something went wrong"
-        });
-    }
+app.get("/error", (req, res) => {
+    res.status(200).send(req.query);
+  });
+
+// A protected Route
+
+//Define the callback function to handle invalidated requests
+const authCallback = (req, res, next) => {
+  if (req.asgardeoError) {
+    res.redirect(`/?message=${req.asgardeoError}`);
+  } else {
+    next();
+  }
+};
+
+//Use the middleware
+app.get("/token", isAuthenticated, authCallback, async (req, res) => {
+  const idToken = await req.asgardeoAuth.getIDToken(
+    req.cookies.ASGARDEO_SESSION_ID
+  );
+  if (idToken) {
+    res.status(200).send({
+      token: idToken,
+    });
+  } else {
+    res.status(500).send({
+      message: "Something went wrong",
+    });
+  }
 });
 
 //Start the app and listen on PORT 5000
-app.listen(PORT, () => { console.log(`Server Started at PORT ${ PORT }`); });
+app.listen(PORT, () => {
+  console.log(`Server Started at PORT ${PORT}`);
+});

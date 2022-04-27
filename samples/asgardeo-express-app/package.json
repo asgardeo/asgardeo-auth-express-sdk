@@ -1,6 +1,6 @@
 {
   "name": "@asgardeo/express-app",
-  "description": "A sample app to demonstrate the usage of @asgardeo/auth-express-sdk",
+  "description": "A sample app to demonstrate the usage of @asgardeo/auth-express",
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
-    "@asgardeo/auth-express": "0.0.1",
+    "@asgardeo/auth-express": "../../lib/",
     "cookie-parser": "^1.4.6",
     "express": "^4.17.1"
   }

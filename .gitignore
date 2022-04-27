@@ -2,6 +2,7 @@
 node_modules/
 lib/node_modules/
 samples/asgardeo-express-app/node_modules/
+samples/asgardeo-express-ejs-app/node_modules/
 jspm_packages/
 
 # Distribution directories

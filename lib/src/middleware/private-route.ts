@@ -23,9 +23,10 @@ import { Logger } from "../utils/logger-util";
 export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.nextFunction) => {
     if (req.cookies.ASGARDEO_SESSION_ID === undefined) {
         Logger.error("No session ID found in the request cookies");
-        return res.status(401).send({
-            message: "Unauthenticated"
-        });
+        //Append the error to the request to be caught by the next middleware
+        req.asgardeoError = "Unauthenticated";
+        
+        return next();
     } else {
         //validate the cookie
         let asgardeoExpressCore: AsgardeoExpressCore = AsgardeoExpressCore.getInstance();
@@ -34,9 +35,10 @@ export const isAuthenticated = async (req: express.Request, res: express.Respons
             return next();
         } else {
             Logger.error("Invalid session ID found in the request cookies");
-            return res.status(401).send({
-                message: "Invalid session cookie"
-            });
+            //Append the error to the request to be caught by the next middleware
+            req.asgardeoError = "Invalid session cookie";
+
+            return next();
         }
     }
 };

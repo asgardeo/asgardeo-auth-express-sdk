@@ -21,7 +21,9 @@ const config = {
   clientSecret: "",
   baseUrl: "",
   appURL: "http://localhost:3000",
-  scope: ["openid", "profile"]
+  scope: ["openid", "profile"],
+  defaultAuthenticatedURL: "/",
+  defaultErrorURL: "/error"
 };
 
 module.exports = config;
