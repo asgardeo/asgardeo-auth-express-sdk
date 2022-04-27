@@ -16,4 +16,4 @@
  * under the License.
  */
 
-export * from "./private-route";
+export * from "./protect-route";
