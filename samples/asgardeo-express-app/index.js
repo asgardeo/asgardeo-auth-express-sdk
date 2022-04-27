@@ -47,22 +47,19 @@ app.get("/", (req, res) => {
   res.status(200).send("Hello World");
 });
 
-app.get("/error", (req, res) => {
-    res.status(200).send(req.query);
-  });
-
 // A protected Route
 
 //Define the callback function to handle invalidated requests
+//If the callback's req object has an asgardeoError, redirect the user to the login page.
 const authCallback = (req, res, next) => {
   if (req.asgardeoError) {
-    res.redirect(`/?message=${req.asgardeoError}`);
+    res.redirect("/login");
   } else {
     next();
   }
 };
 
-//Use the middleware
+//Pass the middleware and the callback function to the route
 app.get("/token", isAuthenticated, authCallback, async (req, res) => {
   const idToken = await req.asgardeoAuth.getIDToken(
     req.cookies.ASGARDEO_SESSION_ID

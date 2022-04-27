@@ -74,7 +74,7 @@
                         <div class="segment-form">
                             <div class="ui visible negative message">
                                 <div class="header"><b>Authentication Error!</b></div>
-                                <p>Something went wrong during the authentication process.</p>
+                                <p><% errorMessage %></p>
                             </div>
                         </div>
                     </div>
@@ -249,7 +249,7 @@
 
         if ("<%=isAuthenticated%>" === "true" && idToken) {
             var parsedIDToken = parseIdToken(idToken);
-            var formattedAuthenticateResponse = new JSONFormatter(<% -JSON.stringify(authenticateResponse) %>, 1, {
+            var formattedAuthenticateResponse = new JSONFormatter(<%-JSON.stringify(authenticateResponse)%>, 1, {
                 theme: "dark"
             });
             var formattedDecodedIdTokenHeader = new JSONFormatter(parsedIDToken.decoded[0], 1, { theme: "dark" });

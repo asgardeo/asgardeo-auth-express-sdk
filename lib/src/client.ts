@@ -98,8 +98,7 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
         async (req: express.Request, res: express.Response, next: express.nextFunction) => {
             try {
                 const response: TokenResponse = await signIn(req, res, next, config.signInConfig);
-                if (response.accessToken || response.idToken) {
-                    console.log("resp",response)
+                if (response) {
                     res.redirect(config.defaultAuthenticatedURL);
                 }
             } catch (e: any) {
@@ -111,7 +110,6 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
                     + (e.code || e.message?.code) ?? "null"
                 const errorRedirectURL = config.defaultErrorURL + encodeURI(errorString);
                 Logger.error(e.message.message);
-                //TODO: The request has already ended at this point due to the redirect in #103
                 res.redirect(errorRedirectURL);
             }
         });

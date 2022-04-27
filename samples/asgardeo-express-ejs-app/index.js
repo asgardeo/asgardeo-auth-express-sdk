@@ -28,7 +28,7 @@ const url = require("url");
 
 const limiter = rateLimit({
   max: 100,
-  windowMs: 1 * 60 * 1000, // 1 minute
+  windowMs: 1 * 60 * 1000 // 1 minute
 });
 
 //Constants
@@ -67,6 +67,10 @@ app.get("/", async (req, res) => {
   res.render("landing", data);
 });
 
+//If the callback's req object has an asgardeoError, redirect the user to an error page.
+// In this example, the langind page is being used to show the errors via URL parameters.
+// If you want, you may redirect the users to /login here as well.
+
 const authCallback = (req, res, next) => {
   if (req.asgardeoError) {
     res.redirect(
@@ -82,6 +86,7 @@ const authCallback = (req, res, next) => {
   }
 };
 
+//Pass the middleware and the callback function to the route
 app.get("/home", isAuthenticated, authCallback, async (req, res) => {
   const data = { ...dataTemplate };
 
