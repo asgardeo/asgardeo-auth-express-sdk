@@ -17,11 +17,14 @@
  */
 
 import express from "express";
-import { AsgardeoExpressCore } from "../core";
+import { AsgardeoExpressClient } from "../client";
 import { UnauthenticatedCallback } from "../models";
 import { Logger } from "../utils/logger-util";
 
-export const protectRoute = (callback: UnauthenticatedCallback): (req: express.Request, res: express.Response, next: express.nextFunction) => Promise<void> => {
+export const protectRoute = (
+    asgardeoExpressClient: AsgardeoExpressClient,
+    callback: UnauthenticatedCallback
+): ((req: express.Request, res: express.Response, next: express.nextFunction) => Promise<void>) => {
     return async (req: express.Request, res: express.Response, next: express.nextFunction): Promise<void> => {
         if (req.cookies.ASGARDEO_SESSION_ID === undefined) {
             Logger.error("No session ID found in the request cookies");
@@ -33,8 +36,7 @@ export const protectRoute = (callback: UnauthenticatedCallback): (req: express.R
             return next();
         } else {
             //validate the cookie
-            let asgardeoExpressCore: AsgardeoExpressCore = AsgardeoExpressCore.getInstance();
-            const isCookieValid = await asgardeoExpressCore.isAuthenticated(req.cookies.ASGARDEO_SESSION_ID);
+            const isCookieValid = await asgardeoExpressClient.isAuthenticated(req.cookies.ASGARDEO_SESSION_ID);
             if (isCookieValid) {
                 return next();
             } else {
