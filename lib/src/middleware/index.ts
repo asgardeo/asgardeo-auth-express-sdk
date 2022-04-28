@@ -17,3 +17,4 @@
  */
 
 export * from "./protect-route";
+export * from "./authentication";
