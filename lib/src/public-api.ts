@@ -16,6 +16,5 @@
  * under the License.
  */
 
-export * from "./client";
 export * from "./models";
-export * from "./middleware";
+export * from "./client";
