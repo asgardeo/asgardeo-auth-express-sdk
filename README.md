@@ -21,7 +21,7 @@
       - [Example](#example)
       - [Description](#description)
       - [Example Usage](#example-usage)
-    - [isAuthenticated](#isauthenticated)
+    - [protectRoute](#protectRoute)
       - [Description](#description-1)
       - [Example Usage](#example-usage-1)
   - [APIs](#apis)
@@ -39,6 +39,7 @@
     - [ExpressClientConfig](#expressclientconfig)
     - [Store](#store)
     - [cookieConfig](#cookieconfig)
+    - [UnauthenticatedCallback](#UnauthenticatedCallback)
   - [Develop](#develop)
     - [Prerequisites](#prerequisites)
     - [Installing Dependencies](#installing-dependencies)
@@ -70,7 +71,7 @@ npm install @asgardeo/auth-express
 const express = require('express');
 
 // The SDK provides a client middleware that can be used to carry out the authentication.
-const { AsgardeoExpressAuth, isAuthenticated } = require('@asgardeo/auth-express');
+const { AsgardeoExpressAuth, protectRoute } = require('@asgardeo/auth-express');
 
 // Create a config object containing the necessary configurations.
 const config = {
@@ -78,7 +79,9 @@ const config = {
   clientSecret: "<YOUR_CLIENT_SECRET>",
   baseUrl: "https://api.asgardeo.io/t/<org_name>",
   appURL: "http://localhost:3000",
-  scope: ["openid", "profile"]
+  scope: ["openid", "profile"],
+  defaultAuthenticatedURL: "",
+  defaultErrorURL: ""
 };
 
 //Initialize an Express App
@@ -96,11 +99,22 @@ app.get("/", (req, res) => {
 });
 
 //A Protected Route
+
+//Define the callback function to handle unauthenticated requests
+const authCallback = (res, error) => {
+  res.redirect(`/?message=${ error }`);
+  // Return true to end the flow at the middleware.
+  return true;
+};
+
+//Create a new middleware to protect the route
+const isAuthenticated = protectRoute(authCallback);
+
 app.get("/protected", isAuthenticated, (req, res) => {
     res.status(200).send("Hello from Protected Route");
 });
 
-//Start the express app on PORT 5000
+//Start the express app on PORT 3000
 app.listen(3000, () => { console.log(`Server Started at PORT 3000`);});
 
 ```
@@ -151,18 +165,30 @@ app.use(asgardeoAuth(config, store));
 ```
 ---
 
-### isAuthenticated
+### protectRoute
 ```TypeScript
-isAuthenticated;
+protectRoute(callback: UnauthenticatedCallback): (req: express.Request, res: express.Response, next: express.nextFunction);
 ```
+#### Arguments
+
+1. callback: [`UnauthenticatedCallback`](#UnauthenticatedCallback)
+
+   This function handles the callback for the unauthenticated users. To know more about implementing the [`UnauthenticatedCallback`](#UnauthenticatedCallback) type, refer to the [UnauthenticatedCallback](#UnauthenticatedCallback) section.
 
 #### Description
 
-This middleware function can be used to protect a route. When this function is passed down to a route, it will check if the session cookie exists on the request and if not it will return a    `401` error and if the cookie is there, the request will proceed as usual.
+This middleware function can be used to protect a route. When this function is passed down to a route, it will check if the session cookie exists on the request and if not it will call the callback function and if the cookie is there, the request will proceed as usual.
 
 #### Example Usage
 
 ```TypeScript
+const authCallback = (res, error) => {
+  res.redirect(`/?message=${ error }`);
+  return true;
+};
+
+const isAuthenticated = protectRoute(authCallback);
+
 app.get("/protected", isAuthenticated, (req, res) => {
     res.status(200).send("Hello from Protected Route");
 });
@@ -568,6 +594,27 @@ When specifying a custom login and logout path using `loginPath` and `logoutPath
 | `sameSite` | Optional          | `boolean` | `true`        | Specifies whether/when cookies are sent with cross-site requests or not.                               |
 
 ---
+
+### UnauthenticatedCallback
+
+```TypeScript
+(res: express.Response, error: string) => boolean;
+```
+
+#### Description
+
+This method is used to handle the callback from a protected route. You may use this function to get the request object and the error message to redirect the user to the desired error page or to redirect to the login page and authenticate the user.
+
+
+#### Example
+
+```TypeScript
+const authCallback = (res, error) => {
+  res.redirect(`/?message=${ error }`);
+  return true;
+};
+```
+
 
 ## Develop
 

@@ -16,15 +16,12 @@
  * under the License.
  */
 
-const {
-  AsgardeoExpressAuth,
-  isAuthenticated,
-} = require("@asgardeo/auth-express");
+const url = require("url");
+const { AsgardeoExpressAuth, protectRoute } = require("@asgardeo/auth-express");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const config = require("./config.json");
-const url = require("url");
 
 const limiter = rateLimit({
   max: 100,
@@ -48,13 +45,16 @@ app.use("/home", express.static("static"));
 //Use the Asgardeo Auth Client
 app.use(AsgardeoExpressAuth(config));
 
+//At this point the default /login and /logout routes should be available.
+//Users can use these two routes for authentication
+
 const dataTemplate = {
   authenticateResponse: null,
   error: false,
   errorMessage: "",
   idToken: null,
   isAuthenticated: true,
-  isConfigPresent: Boolean(config && config.clientID && config.clientSecret),
+  isConfigPresent: Boolean(config && config.clientID && config.clientSecret)
 };
 
 //Routes
@@ -67,27 +67,25 @@ app.get("/", async (req, res) => {
   res.render("landing", data);
 });
 
-//If the callback's req object has an asgardeoError, redirect the user to an error page.
-// In this example, the langind page is being used to show the errors via URL parameters.
-// If you want, you may redirect the users to /login here as well.
-
-const authCallback = (req, res, next) => {
-  if (req.asgardeoError) {
-    res.redirect(
-      url.format({
-        pathname: "/",
-        query: {
-          message: req.asgardeoError
-        }
-      })
-    );
-  } else {
-    next();
-  }
+//Define the callback function to handle invalidated requests
+const authCallback = (res, error) => {
+  res.redirect(
+    url.format({
+      pathname: "/",
+      query: {
+        message: error
+      }
+    })
+  );
+  // Return true to end the flow at the middleware.
+  return true;
 };
 
-//Pass the middleware and the callback function to the route
-app.get("/home", isAuthenticated, authCallback, async (req, res) => {
+//Create a new middleware to protect the route
+const isAuthenticated = protectRoute(authCallback);
+
+//Pass the middleware to the route
+app.get("/home", isAuthenticated, async (req, res) => {
   const data = { ...dataTemplate };
 
   try {
