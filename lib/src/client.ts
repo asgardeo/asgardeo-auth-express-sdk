@@ -16,29 +16,83 @@
  * under the License.
  */
 
-import { Store, TokenResponse } from "@asgardeo/auth-node";
-import { AsgardeoExpressCore } from "./core";
-import express from "express";
-import { ExpressClientConfig } from "./models";
+import {
+    AsgardeoNodeClient,
+    AuthClientConfig,
+    AuthURLCallback,
+    TokenResponse,
+    Store,
+    BasicUserInfo,
+    OIDCEndpoints,
+    DecodedIDTokenPayload,
+    CustomGrantConfig,
+    FetchResponse,
+    AsgardeoAuthException
+} from "@asgardeo/auth-node";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
-import { v4 as uuidv4 } from "uuid";
-import { AsgardeoAuthException } from "./exception";
+import { ExpressClientConfig, UnauthenticatedCallback } from "./models";
 import { Logger } from "./utils/logger-util";
+import express from "express";
+import { v4 as uuidv4 } from "uuid";
+import { asgardeoExpressAuth, protectRoute } from "./middleware";
 
-export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store): void => {
-    //Get the Asgardeo Express Core
-    let asgardeoExpressCore: AsgardeoExpressCore = AsgardeoExpressCore.getInstance(config, store);
+export class AsgardeoExpressClient {
+    private _authClient: AsgardeoNodeClient<AuthClientConfig>;
+    private _store?: Store;
+    private static _clientConfig: ExpressClientConfig;
 
-    //Create the router
-    const router = new express.Router();
+    private static _instance: AsgardeoExpressClient;
 
-    const signIn = async (
+    private constructor(config: ExpressClientConfig, store?: Store) {
+        //Set the client config
+        AsgardeoExpressClient._clientConfig = { ...config };
+
+        //Add the signInRedirectURL and signOutRedirectURL
+        //Add custom paths if the user has already declared any or else use the defaults
+        const nodeClientConfig: AuthClientConfig = {
+            ...config,
+            signInRedirectURL: config.appURL + (config.loginPath || DEFAULT_LOGIN_PATH),
+            signOutRedirectURL: config.appURL + (config.logoutPath || DEFAULT_LOGOUT_PATH)
+        };
+
+        //Initialize the user provided store if there is any
+        if (store) {
+            Logger.debug("Initializing user provided store");
+            this._store = store;
+        }
+
+        //Initialize the Auth Client
+        this._authClient = new AsgardeoNodeClient(nodeClientConfig, this._store);
+    }
+
+    public static getInstance(config: ExpressClientConfig, store?: Store): AsgardeoExpressClient;
+    public static getInstance(): AsgardeoExpressClient;
+    public static getInstance(config?: ExpressClientConfig, store?: Store): AsgardeoExpressClient {
+        //Create a new instance if its not instantiated already
+        if (!AsgardeoExpressClient._instance && config) {
+            AsgardeoExpressClient._instance = new AsgardeoExpressClient(config, store);
+            Logger.debug("Initialized AsgardeoExpressClient successfully");
+        }
+
+        if (!AsgardeoExpressClient._instance && !config) {
+            throw Error(
+                new AsgardeoAuthException(
+                    "EXPRESS-CLIENT-GI1-NF01",
+                    "User configuration  is not found",
+                    "User config has not been passed to initialize AsgardeoExpressClient"
+                ).toString()
+            );
+        }
+
+        return AsgardeoExpressClient._instance;
+    }
+
+    public async signIn(
         req: express.Request,
         res: express.Response,
         next: express.nextFunction,
-        signInConfig?: Record<string, string | boolean>,)
-        : Promise<TokenResponse> => {
-
+        signInConfig?: Record<string, string | boolean>
+    ): Promise<TokenResponse> {
         //Check if the user has a valid user ID and if not create one
         let userID = req.cookies.ASGARDEO_SESSION_ID;
         if (!userID) {
@@ -51,9 +105,12 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
                 //DEBUG
                 Logger.debug("Redirecting to: " + url);
                 res.cookie("ASGARDEO_SESSION_ID", userID, {
-                    maxAge: config.cookieConfig?.maxAge ? config.cookieConfig.maxAge : CookieConfig.defaultMaxAge,
-                    httpOnly: config.cookieConfig?.httpOnly ?? CookieConfig.defaultHttpOnly,
-                    sameSite: config.cookieConfig?.sameSite ?? CookieConfig.defaultSameSite
+                    maxAge: AsgardeoExpressClient._clientConfig.cookieConfig?.maxAge
+                        ? AsgardeoExpressClient._clientConfig.cookieConfig.maxAge
+                        : CookieConfig.defaultMaxAge,
+                    httpOnly:
+                        AsgardeoExpressClient._clientConfig.cookieConfig?.httpOnly ?? CookieConfig.defaultHttpOnly,
+                    sameSite: AsgardeoExpressClient._clientConfig.cookieConfig?.sameSite ?? CookieConfig.defaultSameSite
                 });
                 res.redirect(url);
 
@@ -61,7 +118,7 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
             }
         };
 
-        const authResponse: TokenResponse = await req.asgardeoAuth.signIn(
+        const authResponse: TokenResponse = await this._authClient.signIn(
             authRedirectCallback,
             userID,
             req.query.code,
@@ -81,66 +138,88 @@ export const AsgardeoExpressAuth = (config: ExpressClientConfig, store?: Store):
                 refreshToken: "",
                 scope: "",
                 tokenType: ""
-            }
+            };
         }
     }
 
-    //Patch AuthClient to the request and the response
-    router.use(async (req: express.Request, res: express.Response, next: express.nextFunction) => {
-        req.asgardeoAuth = asgardeoExpressCore;
-        res.asgardeoAuth = asgardeoExpressCore;
-        next();
-    });
+    public async signOut(userId: string): Promise<string> {
+        return this._authClient.signOut(userId);
+    }
 
-    //Patch in '/login' route
-    router.get(
-        config.loginPath || DEFAULT_LOGIN_PATH,
-        async (req: express.Request, res: express.Response, next: express.nextFunction) => {
-            try {
-                const response: TokenResponse = await signIn(req, res, next, config.signInConfig);
-                if (response) {
-                    res.redirect(config.defaultAuthenticatedURL);
-                }
-            } catch (e: any) {
-                console.log(e)
-                //If there is an error, append it as a URL parameter
-                const errorString = "?message="
-                    + (e.message || e.message?.message) ?? "Something went wrong"
-                    + "&code="
-                    + (e.code || e.message?.code) ?? "null"
-                const errorRedirectURL = config.defaultErrorURL + encodeURI(errorString);
-                Logger.error(e.message.message);
-                res.redirect(errorRedirectURL);
-            }
-        });
+    public async isAuthenticated(userId: string): Promise<boolean> {
+        return this._authClient.isAuthenticated(userId);
+    }
 
-    //Patch in '/logout' route
-    router.get(
-        config.logoutPath || DEFAULT_LOGOUT_PATH,
-        async (req: express.Request, res: express.Response, next: express.nextFunction) => {
+    public async getIDToken(userId: string): Promise<string> {
+        return this._authClient.getIDToken(userId);
+    }
 
-            //Check if it is a logout success response
-            if (req.query.state === "sign_out_success") {
-                return res.status(200).send({
-                    message: "Successfully logged out"
-                });
-            }
+    public async getBasicUserInfo(userId: string): Promise<BasicUserInfo> {
+        return this._authClient.getBasicUserInfo(userId);
+    }
 
-            //Check if the cookie exists
-            if (req.cookies.ASGARDEO_SESSION_ID === undefined) {
-                return res.status(401).send({
-                    message: "Unauthenticated"
-                });
-            } else {
-                //Get the signout URL
-                const signOutURL = await req.asgardeoAuth.signOut(req.cookies.ASGARDEO_SESSION_ID);
-                if (signOutURL) {
-                    res.cookie('ASGARDEO_SESSION_ID', null, { maxAge: 0 });
-                    return res.redirect(config.appURL);
-                }
-            }
-        });
+    public async getOIDCServiceEndpoints(): Promise<OIDCEndpoints> {
+        return this._authClient.getOIDCServiceEndpoints();
+    }
 
-    return router;
+    public async getDecodedIDToken(userId?: string): Promise<DecodedIDTokenPayload> {
+        return this._authClient.getDecodedIDToken(userId);
+    }
 
-};
+    public async getAccessToken(userId?: string): Promise<string> {
+        return this._authClient.getAccessToken(userId);
+    }
+
+    public async requestCustomGrant(
+        config: CustomGrantConfig,
+        userId?: string
+    ): Promise<TokenResponse | FetchResponse> {
+        return this._authClient.requestCustomGrant(config, userId);
+    }
+
+    public async updateConfig(config: Partial<AuthClientConfig>): Promise<void> {
+        return this._authClient.updateConfig(config);
+    }
+
+    public async revokeAccessToken(userId?: string): Promise<FetchResponse> {
+        return this._authClient.revokeAccessToken(userId);
+    }
+
+    public static didSignOutFail(signOutRedirectURL: string): boolean {
+        return AsgardeoNodeClient.didSignOutFail(signOutRedirectURL);
+    }
+
+    public static isSignOutSuccessful(signOutRedirectURL: string): boolean {
+        return AsgardeoNodeClient.isSignOutSuccessful(signOutRedirectURL);
+    }
+
+    public static protectRoute(
+        callback: UnauthenticatedCallback
+    ): (req: express.Request, res: express.Response, next: express.nextFunction) => Promise<void> {
+        if (!this._instance) {
+            throw new AsgardeoAuthException(
+                "EXPRESS-CLIENT-PR-NF01",
+                "AsgardeoExpressClient is not instantiated",
+                "Create an instance of AsgardeoExpressClient before using calling this method."
+            );
+        }
+
+        return protectRoute(this._instance, callback);
+    }
+
+    public static asgardeoExpressAuth(
+        onSignIn: (response: TokenResponse) => void,
+        onSignOut: () => void,
+        onError: (exception: AsgardeoAuthException) => void
+    ): any {
+        if (!this._instance) {
+            throw new AsgardeoAuthException(
+                "EXPRESS-CLIENT-AEA-NF01",
+                "AsgardeoExpressClient is not instantiated",
+                "Create an instance of AsgardeoExpressClient before using calling this method."
+            );
+        }
+
+        return asgardeoExpressAuth(this._instance, AsgardeoExpressClient._clientConfig, onSignIn, onSignOut, onError);
+    }
+}
