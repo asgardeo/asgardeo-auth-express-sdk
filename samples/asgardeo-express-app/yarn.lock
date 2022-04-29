@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@asgardeo/auth-express@../../lib/":
+"@asgardeo/auth-express@../../lib":
   version "0.0.1"
   dependencies:
     "@asgardeo/auth-node" "^0.1.0"

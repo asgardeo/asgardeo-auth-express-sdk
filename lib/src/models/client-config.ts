@@ -25,8 +25,6 @@ export interface StrictExpressClientConfig {
         httpOnly?: boolean,
         sameSite?: boolean;
     },
-    defaultAuthenticatedURL: string,
-    defaultErrorURL: string,
     globalAuth?: boolean,
     loginPath?: string,
     logoutPath?: string;
