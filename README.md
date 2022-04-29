@@ -71,7 +71,8 @@ npm install @asgardeo/auth-express
 const express = require('express');
 
 // The SDK provides a client middleware that can be used to carry out the authentication.
-const { AsgardeoExpressAuth, protectRoute } = require('@asgardeo/auth-express');
+const { AsgardeoExpressClient } = require("@asgardeo/auth-express");
+
 
 // Create a config object containing the necessary configurations.
 const config = {
@@ -79,16 +80,38 @@ const config = {
   clientSecret: "<YOUR_CLIENT_SECRET>",
   baseUrl: "https://api.asgardeo.io/t/<org_name>",
   appURL: "http://localhost:3000",
-  scope: ["openid", "profile"],
-  defaultAuthenticatedURL: "",
-  defaultErrorURL: ""
+  scope: ["openid", "profile"]
 };
 
 //Initialize an Express App
 const app = express();
 
-//Use the middleware and pass the config object as the argument.
-app.use(AsgardeoExpressAuth(config));
+//Initialize Asgardeo Express Client
+AsgardeoExpressClient.getInstance(config);
+
+//Define onSignIn method to handle successful sign in
+const onSignIn = (res, response) => {
+  if (response) {
+    res.status(200).send(response);
+  }
+};
+
+//Define onSignOut method to handle successful sign out
+const onSignOut = (res) => {
+  res.status(200).send("Sign out successful");
+};
+
+//Define onError method to handle errors
+const onError = (res, error) => {
+  if(error){
+    res.status(400).send(error);
+  }
+};
+
+//Use the Asgardeo Auth Client
+app.use(
+  AsgardeoExpressClient.asgardeoExpressAuth(onSignIn, onSignOut, onError)
+);
 
 //At this point the default /login and /logout routes should be available.
 //Users can use these two routes for authentication.
@@ -102,13 +125,15 @@ app.get("/", (req, res) => {
 
 //Define the callback function to handle unauthenticated requests
 const authCallback = (res, error) => {
-  res.redirect(`/?message=${ error }`);
+  if(error){
+    res.status(400).send(error);
+  }
   // Return true to end the flow at the middleware.
   return true;
 };
 
 //Create a new middleware to protect the route
-const isAuthenticated = protectRoute(authCallback);
+const isAuthenticated = AsgardeoExpressClient.protectRoute(authCallback);
 
 app.get("/protected", isAuthenticated, (req, res) => {
     res.status(200).send("Hello from Protected Route");
@@ -118,51 +143,65 @@ app.get("/protected", isAuthenticated, (req, res) => {
 app.listen(3000, () => { console.log(`Server Started at PORT 3000`);});
 
 ```
+
 ---
 ## Middleware
 
-### asgardeoAuth
+### asgardeoExpressAuth
 ```TypeScript
-asgardeoAuth(config: ExpressClientConfig, store?: Store);
+asgardeoAuth(
+  onSignIn: (response: TokenResponse) => void,
+  onSignOut: () => void,
+  onError: (exception: AsgardeoAuthException) => void
+): any;
 ```
 
 #### Arguments
 
-1. config: [`ExpressClientConfig`](#ExpressClientConfig)
+1. onSignIn: `(res: express.Response, response: TokenResponse) => void`
 
-   This contains the configuration information needed to implement authentication such as the client ID, server origin etc. Additional configuration information that is needed to configure the client, can be passed down from this object (Eg: A custom login path). To learn more about what attributes can be passed into this object, refer to the [`ExpressClientConfig`](#ExpressClientConfig) section.
+   This method will be called when the user successfully signs in. 
 
-   #### Example
+   ##### Arguments
+   - res: `express.Response`
+   The res object represents the HTTP response that an Express app sends when it gets an HTTP request.
 
-   ```TypeScript
-   const config = {
-       clientID: "<YOUR_CLIENT_ID>",
-       clientSecret: "<YOUR_CLIENT_SECRET>",
-       baseUrl: "<YOUR_BASE_URL>",
-       appURL: "http://localhost:3000",
-       scope: ["openid", "profile"],
-       enableOIDCSessionManagement: true,
-       loginPath : "/customLoginPath"  //An override for the default '/login' route
-       logoutPath : "/customLogoutPath"  //An override for the default '/logout' route
-   };
-   ```
-2. store: [`Store`](#Store) (optional)
+   - response: `TokenResponse`
+   This object will have the token response from the `signIn` method. To know more about the [`TokenResponse`](#TokenResponse), refer to the [TokenResponse](#TokenResponse) section.
 
-   This is the object of interface [`Store`](#Store) that is used by the SDK to store all the necessary data used ranging from the configuration data to the access token. By default, the SDK is packed with a built-in Memory Cache Store. If needed, you can implement the Store to create a class with your own implementation logic and pass an instance of the class as the second argument. This way, you will be able to get the data stored in your preferred place. To know more about implementing the [`Store`](#Store) interface, refer to the [Data Storage](#data-storage) section.
+2.  onSignOut: `(res: express.Response) => void`
 
+    This method will be called when the user signs out succesfully. 
+
+    ##### Arguments
+    - res: `express.Response`
+    The res object represents the HTTP response that an Express app sends when it gets an HTTP request.
+
+3. onError: `(res: express.Response, exception: AsgardeoAuthException) => void`
+
+    This method will be called if an error occurs.
+
+    ##### Arguments
+    - res: `express.Response`
+    The res object represents the HTTP response that an Express app sends when it gets an HTTP request.
+
+    - exception: `AsgardeoAuthException`
+    The exception object of the error occured.
 
 #### Description
 
-The SDK provides a client middleware called `asgardeoAuth` that provides you with the necessary methods to implement authentication.
-You can use this middleware to initiate the `AsgardeoAuth` for your application. By default, the SDK implements the `/login` and `/logout` routes so as soon as you use `asgardeoAuth` middleware, the `/login` and `/logout` routes will be available out of the box for the users to authenticate.
+The SDK provides a client middleware called asgardeoAuth that provides you with the necessary methods to implement authentication. You can use this middleware to initiate the AsgardeoAuth for your application. By default, the SDK implements the `/login` and `/logout` routes so as soon as you use asgardeoAuth middleware, the /login and /logout routes will be available out of the box for the users to authenticate.
 
 _Note: The default `/login` and `/logout` route names can be customized.To learn more, refer to the [`ExpressClientConfig`](#ExpressClientConfig) section._
 
 #### Example Usage
 
-```TypeScript
-app.use(asgardeoAuth(config, store));
-```
+  ```TypeScript
+  app.use(
+    AsgardeoExpressClient.asgardeoExpressAuth(onSignIn, onSignOut, onError)
+  );
+   ```
+
 ---
 
 ### protectRoute
@@ -197,15 +236,42 @@ app.get("/protected", isAuthenticated, (req, res) => {
 
 ## APIs
 
-The SDK provides a singleton client class called `AsgardeoAuth` that provides you with the necessary methods to implement authentication.
-You can use `req.asgardeoAuth` inside a request to access this class in order to use the provided methods.
+The SDK provides a singleton client class called `AsgardeoExpressClient` that provides you with the necessary methods to implement authentication. 
+You can instantiate the class and use `req.asgardeoAuth` inside a request to access this class in order to use the provided methods. 
 
-#### Example
-```Typescript
-app.get("/idtoken", async(req, res) => {
-  const idToken = await req.asgardeoAuth.getIDToken(<user_id>);
-  res.send(idToken);
-});
+### constructor
+
+```typescript
+AsgardeoExpressClient.getInstance(config: ExpressClientConfig, store?: Store);
+```
+#### Arguments
+
+1. config: [`ExpressClientConfig`](#ExpressClientConfig)
+
+   This contains the configuration information needed to implement authentication such as the client ID, server origin etc. Additional configuration information that is needed to configure the client, can be passed down from this object (Eg: A custom login path). To learn more about what attributes can be passed into this object, refer to the [`ExpressClientConfig`](#ExpressClientConfig) section.
+
+   #### Example
+
+   ```TypeScript
+   const config = {
+       clientID: "<YOUR_CLIENT_ID>",
+       clientSecret: "<YOUR_CLIENT_SECRET>",
+       baseUrl: "<YOUR_BASE_URL>",
+       appURL: "http://localhost:3000",
+       scope: ["openid", "profile"]
+   };
+   ```
+2. store: [`Store`](#Store) (optional)
+
+   This is the object of interface [`Store`](#Store) that is used by the SDK to store all the necessary data used ranging from the configuration data to the access token. By default, the SDK is packed with a built-in Memory Cache Store. If needed, you can implement the Store to create a class with your own implementation logic and pass an instance of the class as the second argument. This way, you will be able to get the data stored in your preferred place. To know more about implementing the [`Store`](#Store) interface, refer to the [Data Storage](#data-storage) section.
+
+#### Description
+This returns an instance of the `AsgardeoExpressClient` class and if the class is not instantiated already, it will create a new instance and return it.
+
+#### Example Usage
+
+```TypeScript
+app.use(AsgardeoExpressClient.getInstance(config, store););
 ```
 
 ---
@@ -592,6 +658,21 @@ When specifying a custom login and logout path using `loginPath` and `logoutPath
 | `maxAge`   | Optional          | `number`  | 90000         | The maximum age of the cookie.                                                                         |
 | `httpOnly` | Optional          | `boolean` | `true`        | Setting this true will make sure that the cookie inaccessible to the JavaScript `Document.cooki`e API. |
 | `sameSite` | Optional          | `boolean` | `true`        | Specifies whether/when cookies are sent with cross-site requests or not.                               |
+
+---
+### TokenResponse
+
+| Method         | Type     | Description                 |
+| -------------- | -------- | --------------------------- |
+| `accessToken`  | `string` | The access token.           |
+| `idToken`      | `string` | The id token.               |
+| `expiresIn`    | `string` | The expiry time in seconds. |
+| `scope`        | `string` | The scope of the token.     |
+| `refreshToken` | `string` | The refresh token.          |
+| `tokenType`    | `string` | The token type.             |
+| `session`      | `string` | The session ID.             |
+
+
 
 ---
 
