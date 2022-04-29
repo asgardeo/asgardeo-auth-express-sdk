@@ -1,0 +1,7 @@
+{
+  "clientID": "",
+  "clientSecret": "",
+  "baseUrl": "",
+  "appURL": "http://localhost:3000",
+  "scope": ["openid", "profile"]
+}

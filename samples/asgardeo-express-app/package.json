@@ -1,0 +1,24 @@
+{
+  "name": "@asgardeo/express-app",
+  "description": "A sample app to demonstrate the usage of @asgardeo/auth-express",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "nodemon index.js",
+    "debug": "DEBUG=true nodemon index.js",
+    "build": "yarn install",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Asgardeo",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "@asgardeo/auth-express": "0.0.1",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.17.1"
+  }
+}
