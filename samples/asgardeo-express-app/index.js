@@ -21,6 +21,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const config = require("./config");
 const ESAPI = require('node-esapi');
+const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
   max: 100,
