@@ -55,7 +55,7 @@ const onSignOut = (res) => {
 //Define onError method to handle errors
 const onError = (res, error) => {
   if(error){
-    res.status(400).send(error);
+    res.status(400).send(error ? error.message : "Something went wrong");
   }else{
     res.status(500).send("Something went wrong");
   }
@@ -78,10 +78,11 @@ app.get("/", (req, res) => {
 //Define the callback function to handle invalidated requests
 const authCallback = (res, error) => {
   if(error){
-    res.status(400).send(error);
+    res.status(400).send("You are not authorized to access this resource");
   }else{
     res.status(500).send("Something went wrong");
   }
+
   // Return true to end the flow at the middleware.
   return true;
 };
