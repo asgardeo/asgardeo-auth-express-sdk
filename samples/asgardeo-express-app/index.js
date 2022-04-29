@@ -58,9 +58,6 @@ app.get("/", (req, res) => {
 });
 
 // A protected Route
-
-
-
 //Use the middleware
 app.get("/token", isAuthenticated, async (req, res) => {
   const idToken = await req.asgardeoAuth.getIDToken(

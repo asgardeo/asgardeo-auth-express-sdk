@@ -17,7 +17,7 @@
  */
 
 const url = require("url");
-const { AsgardeoExpressAuth, protectRoute } = require("@asgardeo/auth-express");
+const { AsgardeoExpressClient } = require("@asgardeo/auth-express");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
@@ -42,8 +42,29 @@ app.set("view engine", "ejs");
 app.use("/", express.static("static"));
 app.use("/home", express.static("static"));
 
+AsgardeoExpressClient.getInstance(config);
+
+const onSignIn = (res) => {
+  res.redirect("/home");
+}
+
+const onSignOut = (res) => {
+  res.redirect("/");
+}
+
+const onError = (res, error) => {
+  res.redirect(
+    url.format({
+      pathname: "/",
+      query: {
+        message: error && error.message
+      }
+    })
+  );
+}
+
 //Use the Asgardeo Auth Client
-app.use(AsgardeoExpressAuth(config));
+app.use(AsgardeoExpressClient.asgardeoExpressAuth(onSignIn, onSignOut, onError));
 
 //At this point the default /login and /logout routes should be available.
 //Users can use these two routes for authentication
@@ -82,7 +103,7 @@ const authCallback = (res, error) => {
 };
 
 //Create a new middleware to protect the route
-const isAuthenticated = protectRoute(authCallback);
+const isAuthenticated = AsgardeoExpressClient.protectRoute(authCallback);
 
 //Pass the middleware to the route
 app.get("/home", isAuthenticated, async (req, res) => {
