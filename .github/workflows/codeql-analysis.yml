@@ -15,6 +15,7 @@
 #  under the License.
 
 # This configuration runs GitHub's Code Quality Scanning to scan the code for security issues.
+
 name: "CodeQL"
 
 on:
