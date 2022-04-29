@@ -21,12 +21,19 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const config = require("./config");
 
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 1 * 60 * 1000 // 1 minute
+});
+
 //Define the port to run the server
 const PORT = 3000;
 
 //Initialize Express App
 const app = express();
 app.use(cookieParser());
+
+app.use(limiter);
 
 //Initialize Asgardeo Express Client
 AsgardeoExpressClient.getInstance(config);
