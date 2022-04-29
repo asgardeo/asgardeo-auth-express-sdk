@@ -34,7 +34,7 @@ export const asgardeoExpressAuth = (
     const router = new express.Router();
 
     //Patch AuthClient to the request and the response
-    router.use(async (req: express.Request, res: express.Response, next: express.nextFunction) => {
+    router.use(async (req: express.Request, res: express.Response, next: express.nextFunction): Promise<void> => {
         req.asgardeoAuth = asgardeoExpressClient;
         res.asgardeoAuth = asgardeoExpressClient;
         next();
@@ -43,7 +43,7 @@ export const asgardeoExpressAuth = (
     //Patch in '/login' route
     router.get(
         config.loginPath || DEFAULT_LOGIN_PATH,
-        async (req: express.Request, res: express.Response, next: express.nextFunction) => {
+        async (req: express.Request, res: express.Response, next: express.nextFunction): Promise<void> => {
             try {
                 const response: TokenResponse = await asgardeoExpressClient.signIn(req, res, next, config.signInConfig);
                 if (response.accessToken || response.idToken) {
@@ -59,10 +59,12 @@ export const asgardeoExpressAuth = (
     //Patch in '/logout' route
     router.get(
         config.logoutPath || DEFAULT_LOGOUT_PATH,
-        async (req: express.Request, res: express.Response, next: express.nextFunction) => {
+        async (req: express.Request, res: express.Response, next: express.nextFunction): Promise<void> => {
             //Check if it is a logout success response
             if (req.query.state === "sign_out_success") {
                 onSignOut(res);
+
+                return;
             }
 
             //Check if the cookie exists
@@ -75,16 +77,22 @@ export const asgardeoExpressAuth = (
                         "No cookie was sent with the request. The user may not have signed in yet."
                     )
                 );
+
+                return;
             } else {
                 //Get the signout URL
                 try {
                     const signOutURL = await req.asgardeoAuth.signOut(req.cookies.ASGARDEO_SESSION_ID);
                     if (signOutURL) {
                         res.cookie("ASGARDEO_SESSION_ID", null, { maxAge: 0 });
-                        return res.redirect(signOutURL);
+                        res.redirect(signOutURL);
+
+                        return;
                     }
                 } catch (e: any) {
                     onError(res, e);
+
+                    return;
                 }
             }
         }
