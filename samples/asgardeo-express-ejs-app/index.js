@@ -102,6 +102,7 @@ const authCallback = (res, error) => {
       }
     })
   );
+
   // Return true to end the flow at the middleware.
   return true;
 };
