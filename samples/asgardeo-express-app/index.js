@@ -55,7 +55,7 @@ const onSignOut = (res) => {
 //Define onError method to handle errors
 const onError = (res, error) => {
   if(error){
-    res.status(400).send(error ? error.message : "Something went wrong");
+    res.status(400).send(error ? JSON.stringify(error.message) : "Something went wrong");
   }else{
     res.status(500).send("Something went wrong");
   }
