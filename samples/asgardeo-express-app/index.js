@@ -67,7 +67,6 @@ app.get("/", (req, res) => {
   res.status(200).send("Hello World");
 });
 
-//Protected Routes
 
 //Define the callback function to handle invalidated requests
 const authCallback = (res, error) => {
