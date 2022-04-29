@@ -16,13 +16,10 @@
  * under the License.
  */
 
+const { AsgardeoExpressClient } = require("@asgardeo/auth-express");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const config = require("./config");
-const {
-  AsgardeoExpressAuth,
-  protectRoute,
-} = require("@asgardeo/auth-express");
 
 //Define the port to run the server
 const PORT = 3000;
@@ -31,34 +28,67 @@ const PORT = 3000;
 const app = express();
 app.use(cookieParser());
 
-//Use the Asgardeo Auth Middleware
-app.use(AsgardeoExpressAuth(config));
+//Initialize Asgardeo Express Client
+AsgardeoExpressClient.getInstance(config);
 
-//Define the callback function to handle invalidated requests
-const authCallback = (res, error) => {
-  res.redirect(`/?message=${ error }`);
-
-  // Return true to end the flow at the middleware.
-  return true;
+//Define onSignIn method to handle successful sign in
+const onSignIn = (res, response) => {
+  if (response) {
+    res.status(200).send(response);
+  }else{
+    res.status(500).send("Something went wrong");
+  }
 };
 
-const isAuthenticated = protectRoute(authCallback);
+//Define onSignOut method to handle successful sign out
+const onSignOut = (res) => {
+  res.status(200).send("Sign out successful");
+};
+
+//Define onError method to handle errors
+const onError = (res, error) => {
+  if(error){
+    res.status(400).send(error);
+  }else{
+    res.status(500).send("Something went wrong");
+  }
+};
+
+//Use the Asgardeo Auth Client
+app.use(
+  AsgardeoExpressClient.asgardeoExpressAuth(onSignIn, onSignOut, onError)
+);
 
 //At this point the default /login and /logout routes should be available.
 //Users can use these two routes for authentication
-
-//Protected Routes
-app.get("/protected", isAuthenticated, (req, res) => {
-  res.status(200).send("Hello from Protected Route");
-});
 
 //A regular route
 app.get("/", (req, res) => {
   res.status(200).send("Hello World");
 });
 
-// A protected Route
-//Use the middleware
+//Protected Routes
+
+//Define the callback function to handle invalidated requests
+const authCallback = (res, error) => {
+  if(error){
+    res.status(400).send(error);
+  }else{
+    res.status(500).send("Something went wrong");
+  }
+  // Return true to end the flow at the middleware.
+  return true;
+};
+
+//Create a new middleware to protect the route
+const isAuthenticated = AsgardeoExpressClient.protectRoute(authCallback);
+
+//Pass the middleware to the route
+app.get("/protected", isAuthenticated, (req, res) => {
+  res.status(200).send("Hello from Protected Route");
+});
+
+// Another protected Route
 app.get("/token", isAuthenticated, async (req, res) => {
   const idToken = await req.asgardeoAuth.getIDToken(
     req.cookies.ASGARDEO_SESSION_ID

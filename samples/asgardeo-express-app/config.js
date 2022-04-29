@@ -17,13 +17,11 @@
  */
 
 const config = {
-  clientID: "",
-  clientSecret: "",
-  baseUrl: "",
+  clientID: "_1d5iHE2DzskjgZWHOsjCazhB_ga",
+  clientSecret: "5XinOZ5syWId34TxJ0Rt9_f9Hpsa",
+  baseUrl: "https://dev.api.asgardeo.io/t/sdktests",
   appURL: "http://localhost:3000",
-  scope: ["openid", "profile"],
-  defaultAuthenticatedURL: "/",
-  defaultErrorURL: "/error"
+  scope: ["openid", "profile"]
 };
 
 module.exports = config;

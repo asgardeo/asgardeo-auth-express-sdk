@@ -42,16 +42,20 @@ app.set("view engine", "ejs");
 app.use("/", express.static("static"));
 app.use("/home", express.static("static"));
 
+//Initialize Asgardeo Express Client
 AsgardeoExpressClient.getInstance(config);
 
+//Define onSignIn method to handle successful sign in
 const onSignIn = (res) => {
   res.redirect("/home");
 }
 
+//Define onSignOut method to handle successful sign out
 const onSignOut = (res) => {
   res.redirect("/");
 }
 
+//Define onError method to handle errors
 const onError = (res, error) => {
   res.redirect(
     url.format({

@@ -3,7 +3,5 @@
   "clientSecret": "5XinOZ5syWId34TxJ0Rt9_f9Hpsa",
   "baseUrl": "https://dev.api.asgardeo.io/t/sdktests",
   "appURL": "http://localhost:3000",
-  "scope": ["openid", "profile"],
-  "defaultAuthenticatedURL": "/home",
-  "defaultErrorURL": "/"
+  "scope": ["openid", "profile"]
 }
