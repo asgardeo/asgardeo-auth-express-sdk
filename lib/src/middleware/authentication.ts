@@ -81,7 +81,7 @@ export const asgardeoExpressAuth = (
                     const signOutURL = await req.asgardeoAuth.signOut(req.cookies.ASGARDEO_SESSION_ID);
                     if (signOutURL) {
                         res.cookie("ASGARDEO_SESSION_ID", null, { maxAge: 0 });
-                        return res.redirect(config.appURL);
+                        return res.redirect(signOutURL);
                     }
                 } catch (e: any) {
                     onError(res, e);
