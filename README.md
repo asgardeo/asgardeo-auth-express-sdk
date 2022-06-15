@@ -16,7 +16,7 @@
   - [Install](#install)
   - [Getting Started](#getting-started)
   - [Middleware](#middleware)
-    - [asgardeoAuth](#asgardeoauth)
+    - [asgardeoExpressAuth](#asgardeoexpressauth)
       - [Arguments](#arguments)
       - [Example](#example)
       - [Description](#description)
