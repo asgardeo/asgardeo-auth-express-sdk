@@ -16,7 +16,7 @@
   - [Install](#install)
   - [Getting Started](#getting-started)
   - [Middleware](#middleware)
-    - [asgardeoAuth](#asgardeoauth)
+    - [asgardeoExpressAuth](#asgardeoexpressauth)
       - [Arguments](#arguments)
       - [Example](#example)
       - [Description](#description)
@@ -28,6 +28,7 @@
     - [getIDToken](#getIDToken)
     - [getBasicUserInfo](#getBasicUserInfo)
     - [getOIDCServiceEndpoints](#getOIDCServiceEndpoints)
+    - [getDecodedIDToken](#getdecodedidtoken)
     - [getAccessToken](#getAccessToken)
     - [revokeAccessToken](#revokeAccessToken)
     - [requestCustomGrant](#requestCustomGrant)
@@ -54,7 +55,20 @@ Asgardeo Auth Express SDK implements OIDC authentication in JavaScript/TypeScrip
 ## Prerequisite
 
 Create an organization in Asgardeo if you don't already have one. The organization name you choose will be referred to as `<org_name>` throughout this documentation.
-If you are using [Asgardeo Cloud](https://wso2.com/asgardeo/) as the identity server, create a **Standard-Based Application** in the console.
+
+If you are using [Asgardeo Cloud](https://wso2.com/asgardeo/) as the identity server, 
+1. Create a **Standard-Based Application** in the console.
+2. In the Protocol section in Asgardeo console,
+    1. Change **Allowed grant types** to **Code** and **Refresh Token**.
+    2. Specify the login and logout URLs under **Authorized redirect URLs**.
+          ```
+           # default login url:
+          https://<host>:<port>/login
+            
+          # default logout url:
+          https://<host>:<port>/logout            
+          ```
+    3. Add the HTTP origin under the Allowed Origin.
 
 ## Install
 
@@ -69,6 +83,9 @@ npm install @asgardeo/auth-express
 ```javascript
 //Import Express
 const express = require('express');
+
+// Import Cookie Parser to access request cookies.
+const cookieParser = require('cookie-parser');
 
 // The SDK provides a client middleware that can be used to carry out the authentication.
 const { AsgardeoExpressClient } = require("@asgardeo/auth-express");
@@ -85,6 +102,9 @@ const config = {
 
 //Initialize an Express App
 const app = express();
+
+// Use cookie parser in the Express App.
+app.use(cookieParser())
 
 //Initialize Asgardeo Express Client
 AsgardeoExpressClient.getInstance(config);
@@ -150,9 +170,9 @@ app.listen(3000, () => { console.log(`Server Started at PORT 3000`);});
 ### asgardeoExpressAuth
 ```TypeScript
 asgardeoAuth(
-  onSignIn: (response: TokenResponse) => void,
-  onSignOut: () => void,
-  onError: (exception: AsgardeoAuthException) => void
+  onSignIn: (res: express.Response, response: TokenResponse) => void,
+  onSignOut: (res: express.Response) => void,
+  onError: (res: express.Response, exception: AsgardeoAuthException) => void
 ): any;
 ```
 
@@ -171,7 +191,7 @@ asgardeoAuth(
 
 2.  onSignOut: `(res: express.Response) => void`
 
-    This method will be called when the user signs out succesfully. 
+    This method will be called when the user signs out successfully. 
 
     ##### Arguments
     - res: `express.Response`
@@ -186,7 +206,7 @@ asgardeoAuth(
     The res object represents the HTTP response that an Express app sends when it gets an HTTP request.
 
     - exception: `AsgardeoAuthException`
-    The exception object of the error occured.
+    The exception object of the error occurred.
 
 #### Description
 
@@ -397,17 +417,17 @@ getAccessToken(userId?: string): Promise<string>
 
 #### Returns
 
-idToken: `Promise<string>` The id token.
+accessToken: `Promise<string>` The access token.
 
 #### Description
 
-This method returns the id token.
+This method returns the access token.
 
 #### Example
 
 ```TypeScript
 // This should be within an async function.
-const idToken = await authClient.getIDToken("a2a2972c-51cd-5e9d-a9ae-058fae9f7927");
+const accessToken = await authClient.getAccessToken("a2a2972c-51cd-5e9d-a9ae-058fae9f7927");
 ```
 
 ---
@@ -589,7 +609,7 @@ There are three methods that are to be implemented by the developer. They are
 2. `getData`
 3. `removeData`
 
-The `setData` method is used to store data. The `getData` method is used to retrieve data. The `removeData` method is used to delete data. The SDK converts the data to be stored into a JSON string internally and then calls the `setData` method to store the data. The data is represented as a key-value pairs in the SDK. The SDK uses four keys internally and you can learn about them by referring to the [Data Layer](#data-layer) section. So, every JSON stringified data value is supposed to be stored against the passed key in the data store. A sample implementation of the `Store` class using the browser session storage is given here.
+The `setData` method is used to store data. The `getData` method is used to retrieve data. The `removeData` method is used to delete data. The SDK converts the data to be stored into a JSON string internally and then calls the `setData` method to store the data. The data is represented as a key-value pairs in the SDK. The SDK uses four keys internally, and you can learn about them by referring to the [Data Layer](#data-layer) section. So, every JSON stringified data value is supposed to be stored against the passed key in the data store. A sample implementation of the `Store` class using the browser session storage is given here.
 
 ```TypeScript
 class NodeStore implements Store {
@@ -631,7 +651,7 @@ This model has the following attributes.
 | `validateIDToken`            | Optional          | `boolean`       | `true`                                                      | Allows you to enable/disable JWT ID token validation after obtaining the ID token.            |
 | `clockTolerance`             | Optional          | `number`        | `60`                                                        | Allows you to configure the leeway when validating the id_token.                              |
 | `sendCookiesInRequests`      | Optional          | `boolean`       | `true`                                                      | Specifies if cookies should be sent in the requests.                                          |
-| `cookieConfig`               | Optional          | `cookieConfig`  | [cookieConfig Default Values](cookieConfig)                 | Specifies the `maxAge`, `httpOnly` and `sameSite` values for the cookie configutation.        |
+| `cookieConfig`               | Optional          | `cookieConfig`  | [cookieConfig Default Values](cookieConfig)                 | Specifies the `maxAge`, `httpOnly` and `sameSite` values for the cookie configuration.        |
 | `loginPath`                  | Optional          | `string`        | `/login`                                                    | Specifies the default login path.                                                             |
 | `logoutPath`                 | Optional          | `string`        | `/logout`                                                   | Specifies the default logout path.                                                            |
 | `globalAuth`                 | Optional          | `boolean`       | `false`                                                     | Specifies if all the routes should be protected or not.                                       |
@@ -643,18 +663,18 @@ When specifying a custom login and logout path using `loginPath` and `logoutPath
 
 ### Store
 
-| Method       | Required/Optional | Arguments                      | Returns                                                                                                                                                                         | Description                                                                                                                         |
-| ------------ | ----------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `setData`    | Required          | key: `string`, value: `string` | `Promise<void>`                                                                                                                                                                 | This method saves the passed value to the store. The data to be saved is JSON stringified so will be passed by the SDK as a string. |
-| `getData`    | Required          | key: `string`\|`string`        | This method retrieves the data from the store and returns a Promise that resolves with it. Since the SDK stores the data as a JSON string, the returned value will be a string. |
-| `removeData` | Required          | key: `string`                  | `Promise<void>`                                                                                                                                                                 | Removes the data with the specified key from the store.                                                                             |
+| Method       | Required/Optional | Arguments                      | Returns         | Description                                                                                                                                                                     |
+|--------------|-------------------|--------------------------------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `setData`    | Required          | key: `string`, value: `string` | `Promise<void>` | This method saves the passed value to the store. The data to be saved is JSON stringified so will be passed by the SDK as a string.                                             |
+| `getData`    | Required          | key: `string`\                 | `string`        | This method retrieves the data from the store and returns a Promise that resolves with it. Since the SDK stores the data as a JSON string, the returned value will be a string. |
+| `removeData` | Required          | key: `string`                  | `Promise<void>` | Removes the data with the specified key from the store.                                                                                                                         |
 
 ---
 
 ### cookieConfig
 
 | Method     | Required/Optional | Type      | Default Value | Description                                                                                            |
-| ---------- | ----------------- | --------- | ------------- | ------------------------------------------------------------------------------------------------------ |
+|------------|-------------------|-----------|---------------|--------------------------------------------------------------------------------------------------------|
 | `maxAge`   | Optional          | `number`  | 90000         | The maximum age of the cookie.                                                                         |
 | `httpOnly` | Optional          | `boolean` | `true`        | Setting this true will make sure that the cookie inaccessible to the JavaScript `Document.cooki`e API. |
 | `sameSite` | Optional          | `boolean` | `true`        | Specifies whether/when cookies are sent with cross-site requests or not.                               |
@@ -663,7 +683,7 @@ When specifying a custom login and logout path using `loginPath` and `logoutPath
 ### TokenResponse
 
 | Method         | Type     | Description                 |
-| -------------- | -------- | --------------------------- |
+|----------------|----------|-----------------------------|
 | `accessToken`  | `string` | The access token.           |
 | `idToken`      | `string` | The id token.               |
 | `expiresIn`    | `string` | The expiry time in seconds. |
