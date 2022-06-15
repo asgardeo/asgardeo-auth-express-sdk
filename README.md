@@ -107,7 +107,7 @@ const app = express();
 app.use(cookieParser())
 
 //Initialize Asgardeo Express Client
-AsgardeoExpressClient.getInstance(config);
+const authClient = AsgardeoExpressClient.getInstance(config);
 
 //Define onSignIn method to handle successful sign in
 const onSignIn = (res, response) => {
