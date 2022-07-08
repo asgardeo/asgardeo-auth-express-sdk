@@ -50,7 +50,7 @@ export const asgardeoExpressAuth = (
                     onSignIn(res, response);
                 }
             } catch (e: any) {
-                Logger.error(e.message.message);
+                Logger.error(e.message);
                 onError(res, e);
             }
         }
