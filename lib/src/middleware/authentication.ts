@@ -16,12 +16,11 @@
  * under the License.
  */
 
-import { AsgardeoAuthException, Store, TokenResponse } from "@asgardeo/auth-node";
+import { AsgardeoAuthException, Store, TokenResponse, Logger } from "@asgardeo/auth-node";
 import express from "express";
 import { AsgardeoExpressClient } from "../client";
 import { DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "../constants";
 import { ExpressClientConfig } from "../models";
-import { Logger } from "../utils/logger-util";
 
 export const asgardeoExpressAuth = (
     asgardeoExpressClient: AsgardeoExpressClient,
