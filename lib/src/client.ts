@@ -35,6 +35,7 @@ import { Logger } from "./utils/logger-util";
 import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import { asgardeoExpressAuth, protectRoute } from "./middleware";
+import { ExpressUtils } from "./utils/express-utils";
 
 export class AsgardeoExpressClient {
     private _authClient: AsgardeoNodeClient<AuthClientConfig>;
@@ -93,6 +94,17 @@ export class AsgardeoExpressClient {
         next: express.nextFunction,
         signInConfig?: Record<string, string | boolean>
     ): Promise<TokenResponse> {
+
+        if (ExpressUtils.hasErrorInURL(req.originalUrl)) {
+            return Promise.reject(
+                new AsgardeoAuthException(
+                    "EXPRESS-CLIENT-SI-IV01",
+                    "Invalid login request URL",
+                    "Login request contains an error query parameter in the URL"
+                )
+            )
+        }
+
         //Check if the user has a valid user ID and if not create one
         let userID = req.cookies.ASGARDEO_SESSION_ID;
         if (!userID) {
