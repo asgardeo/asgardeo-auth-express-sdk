@@ -677,7 +677,8 @@ When specifying a custom login and logout path using `loginPath` and `logoutPath
 |------------|-------------------|-----------|---------------|--------------------------------------------------------------------------------------------------------|
 | `maxAge`   | Optional          | `number`  | 90000         | The maximum age of the cookie.                                                                         |
 | `httpOnly` | Optional          | `boolean` | `true`        | Setting this true will make sure that the cookie inaccessible to the JavaScript `Document.cooki`e API. |
-| `sameSite` | Optional          | `boolean` | `true`        | Specifies whether/when cookies are sent with cross-site requests or not.                               |
+| `sameSite` | Optional          | `string` | `lax`        | Specifies the value for sameSite (Lax / Strict / None) attribute.                               |
+| `secure` | Optional          | `boolean` | `false`        | Specifies whether the cookie is secure or not. This will be needed to set to true when `sameSite` attribute is set to `None`.                               |
 
 ---
 ### TokenResponse

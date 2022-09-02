@@ -23,7 +23,8 @@ export interface StrictExpressClientConfig {
     cookieConfig?: {
         maxAge?: number,
         httpOnly?: boolean,
-        sameSite?: boolean;
+        sameSite?: string;
+        secure?: boolean;
     },
     globalAuth?: boolean,
     loginPath?: string,

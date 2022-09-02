@@ -19,7 +19,8 @@
 export enum CookieConfig {
     defaultMaxAge = 90000,
     defaultHttpOnly = 'true',
-    defaultSameSite = 'lax'
+    defaultSameSite = 'lax',
+    defaultSecure = 'false'
 }
 
 export const DEFAULT_LOGIN_PATH = "/login";
