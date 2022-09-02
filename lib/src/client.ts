@@ -122,7 +122,8 @@ export class AsgardeoExpressClient {
                         : CookieConfig.defaultMaxAge,
                     httpOnly:
                         AsgardeoExpressClient._clientConfig.cookieConfig?.httpOnly ?? CookieConfig.defaultHttpOnly,
-                    sameSite: AsgardeoExpressClient._clientConfig.cookieConfig?.sameSite ?? CookieConfig.defaultSameSite
+                    sameSite: AsgardeoExpressClient._clientConfig.cookieConfig?.sameSite ?? CookieConfig.defaultSameSite,
+                    secure: AsgardeoExpressClient._clientConfig.cookieConfig?.secure ?? CookieConfig.defaultSecure
                 });
                 res.redirect(url);
 
