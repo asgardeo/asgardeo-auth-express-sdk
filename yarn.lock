@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@asgardeo/auth-js/-/auth-js-2.0.14.tgz#171b6c7b610f0c2993a7e5c17b92d9e5cf5e6b07"
   integrity sha512-Wl+JzGF+xy7yesscJh57jXYMqMKd9X13n9Xuxhlhi1n+wb/jcVsYua5Fw6UvOA/+eCwh6f7F93frfzZdVHpqmg==
 
-"@asgardeo/auth-node@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@asgardeo/auth-node/-/auth-node-0.1.0.tgz#3857ae53b8c5bde19e6b2a9d72305e73cb0adf7b"
-  integrity sha512-nFYmM7TNAWowvxHdWtpFkj/L8bqv2riXU7sqtL50Zbply5W1oxSuqDB4MXNB2bYqx/lSGtq3wCwhAPIGAm+BJg==
+"@asgardeo/auth-node@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@asgardeo/auth-node/-/auth-node-0.1.1.tgz#c5ceb0f9eebfbee1684220b1de0de060ff9c6d42"
+  integrity sha512-DUpGGdtMbpw60GjM3VgyKCIpNog8AvjNWfWPNJt/XU+FIJPbnt0zIV0H2pDOhugiwiDwC/1k/pUFd96wqFsTUw==
   dependencies:
     "@asgardeo/auth-js" "^2.0.6"
     base64url "^3.0.1"
@@ -1996,6 +1996,11 @@ dot-prop@^6.0.1:
   dependencies:
     is-obj "^2.0.0"
 
+dotenv@^16.0.2:
+  version "16.0.2"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.0.2.tgz#0b0f8652c016a3858ef795024508cddc4bffc5bf"
+  integrity sha512-JvpYKUmzQhYoIFgK2MOnF3bciIZoItIIoryihy0rIA+H4Jy0FmgyKYAHCTN98P5ybGSJcIFbh6QKeJdtZd1qhA==
+
 duplexer@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
@@ -2322,9 +2327,9 @@ execa@^5.0.0:
     strip-final-newline "^2.0.0"
 
 express-rate-limit@^6.4.0:
-  version "6.5.2"
-  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-6.5.2.tgz#5d2322e680ed43ae303b775fa7e19496c9014b58"
-  integrity sha512-N0cG/5ccbXfNC+FxRu7ujm2HjKkygF2PL7KLAf/hct9uqKB5QkZVizb/hEst6tUBXnfhblYWgOorN2eY+Saerw==
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-6.6.0.tgz#3bbc2546540d327b1b0bfa9ab5f1b2c49075af98"
+  integrity sha512-HFN2+4ZGdkQOS8Qli4z6knmJFnw6lZed67o6b7RGplWeb1Z0s8VXaj3dUgPIdm9hrhZXTRpCTHXA0/2Eqex0vA==
 
 express@^4.17.1, express@^4.17.2:
   version "4.18.1"
