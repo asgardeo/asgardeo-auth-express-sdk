@@ -235,4 +235,8 @@ export class AsgardeoExpressClient {
 
         return asgardeoExpressAuth(this._instance, AsgardeoExpressClient._clientConfig, onSignIn, onSignOut, onError);
     }
+
+    public async getDataLayer() {
+        return this._authClient.getDataLayer();
+    }
 }
