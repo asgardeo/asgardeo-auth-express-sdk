@@ -12,6 +12,7 @@ build/Release
 target/
 npm/
 umd/
+**/build
 
 # Cache directories
 .npm
@@ -38,3 +39,5 @@ lerna-debug.log
 .settings
 .factorypath
 .DS_Store
+
+**/.node-persist
