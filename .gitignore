@@ -18,6 +18,7 @@ umd/
 .npm
 .eslintcache
 .node_repl_history
+**/.node-persist
 
 # Log files
 logs
@@ -39,5 +40,3 @@ lerna-debug.log
 .settings
 .factorypath
 .DS_Store
-
-**/.node-persist
