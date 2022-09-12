@@ -18,6 +18,9 @@
       "Authenticate"
   ],
   "scripts": {
+    "prebuild": "curr_dir=$(pwd) && npm run install:client && cd $curr_dir && npm run install:server",
+    "install:client": "cd apps/client && CI=false npm install --if-present",
+    "install:server": "cd apps/server && npm install",
     "build": "curr_dir=$(pwd) && yarn build:client && cd $curr_dir && npm run build:server",
     "build:client": "cd apps/client && npm run build",
     "build:server": "cd apps/server && npm run build"
@@ -25,10 +28,6 @@
   "devDependencies": {
     "eslint-config-custom": "*",
     "prettier": "latest"
-  },
-  "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=14.0.0"
   },
   "dependencies": {},
   "packageManager": "yarn@1.22.15"

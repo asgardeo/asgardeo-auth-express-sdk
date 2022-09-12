@@ -27,8 +27,8 @@
     "eslint-config-react-app": "^7.0.1"
   },
   "scripts": {
-    "start": "HTTPS=true npx react-scripts start",
-    "build": "npm i && npx react-scripts build",
+    "start": "HTTPS=true react-scripts start",
+    "build": "CI=false && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
