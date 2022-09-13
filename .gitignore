@@ -12,11 +12,13 @@ build/Release
 target/
 npm/
 umd/
+**/build
 
 # Cache directories
 .npm
 .eslintcache
 .node_repl_history
+**/.node-persist
 
 # Log files
 logs
