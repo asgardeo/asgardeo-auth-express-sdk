@@ -102,6 +102,7 @@ export const refresh = async (req, res) => {
       subject_token: data.access_token,
       subject_token_type: SUBJECT_TOKEN_TYPE,
       client_id: process.env.CHOREO_CONSUMER_KEY,
+      client_secret: process.env.CHOREO_CONSUMER_SECRET,
       orgHandle: process.env.CHOREO_ORGANIZATION,
     };
 
