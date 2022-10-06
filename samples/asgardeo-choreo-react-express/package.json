@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "prebuild": "curr_dir=$(pwd) && npm run install:client && cd $curr_dir && npm run install:server",
-    "install:client": "cd apps/client && CI=false npm install --if-present",
+    "install:client": "cd apps/client && CI=false npm install --if-present --legacy-peer-deps",
     "install:server": "cd apps/server && npm install",
     "build": "curr_dir=$(pwd) && yarn build:client && cd $curr_dir && npm run build:server",
     "build:client": "cd apps/client && npm run build",
