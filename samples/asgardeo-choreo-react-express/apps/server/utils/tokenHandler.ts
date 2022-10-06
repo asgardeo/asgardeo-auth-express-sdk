@@ -25,6 +25,7 @@ const SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt";
 export const exchangeToken = async function (accessToken: string) {
   const exchangeGrantData = {
     client_id: process.env.CHOREO_CONSUMER_KEY,
+    client_secret: process.env.CHOREO_CONSUMER_SECRET,
     orgHandle: process.env.CHOREO_ORGANIZATION,
     grant_type: GRANT_TYPE,
     requested_token_type: REQUESTED_TOKEN_TYPE,
