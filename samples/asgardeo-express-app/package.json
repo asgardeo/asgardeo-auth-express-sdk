@@ -1,7 +1,7 @@
 {
   "name": "@asgardeo/express-app",
   "description": "A sample app to demonstrate the usage of @asgardeo/auth-express",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,7 +17,7 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
-    "@asgardeo/auth-express": "^0.1.1",
+    "@asgardeo/auth-express": "^0.1.2",
     "cookie-parser": "^1.4.6",
     "express": "^4.17.1",
     "express-rate-limit": "^6.4.0",

@@ -1,6 +1,6 @@
 {
     "name": "@asgardeo/auth-express",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Asgardeo Auth Express JS SDK and Sample Apps",
     "main": "dist/src/index.js",
     "scripts": {
