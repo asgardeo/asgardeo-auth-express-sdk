@@ -27,11 +27,11 @@ import {
     DecodedIDTokenPayload,
     CustomGrantConfig,
     FetchResponse,
-    AsgardeoAuthException
+    AsgardeoAuthException,
+    Logger
 } from "@asgardeo/auth-node";
 import { CookieConfig, DEFAULT_LOGIN_PATH, DEFAULT_LOGOUT_PATH } from "./constants";
 import { ExpressClientConfig, UnauthenticatedCallback } from "./models";
-import { Logger } from "./utils/logger-util";
 import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import { asgardeoExpressAuth, protectRoute } from "./middleware";
