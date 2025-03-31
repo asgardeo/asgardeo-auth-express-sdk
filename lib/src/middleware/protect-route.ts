@@ -19,7 +19,7 @@
 import express from "express";
 import { AsgardeoExpressClient } from "../client";
 import { UnauthenticatedCallback } from "../models";
-import { Logger } from "../utils/logger-util";
+import { Logger } from "@asgardeo/auth-node";
 
 export const protectRoute = (
     asgardeoExpressClient: AsgardeoExpressClient,
